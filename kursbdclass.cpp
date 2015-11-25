@@ -8,7 +8,7 @@ KursBDClass::KursBDClass()
     table_length = 0;
 }
 
-KursBDClass::open(char *BD_file_name)
+int KursBDClass::open(char *BD_file_name)
 {
     char buff[LINELEN]; // буфер
     bd_out_file = fopen(BD_file_name, "r+");
@@ -36,12 +36,12 @@ KursBDClass::open(char *BD_file_name)
     return 0;
 }
 
-KursBDClass::close()
+void KursBDClass::close()
 {
     fclose(bd_out_file);
 }
 
-KursBDClass::parse(char *string_to_parse)
+int KursBDClass::parse(char *string_to_parse)
 {
     int pos = 0;
 
@@ -54,43 +54,42 @@ KursBDClass::parse(char *string_to_parse)
     return 0;
 }
 
-KursBDClass::findId(int id)
+int KursBDClass::findId(int id)
 {
-    cout << id << endl;
 
     return 0;
 }
 
-KursBDClass::create(char *BD_file_name)
+int KursBDClass::create(char *BD_file_name)
 {
-    cout << BD_file_name << endl;
+
 
     return 0;
 }
 
-KursBDClass::checkSpace()
+int KursBDClass::checkSpace()
 {
     return 0;
 }
 
-KursBDClass::select(char* query_string)
+void KursBDClass::select(char* query_string)
 {
-    cout << query_string << endl;
+
 }
 
-KursBDClass::insert(char *insert_string)
+void KursBDClass::insert(char *insert_string)
 {
-    cout << insert_string << endl;
+
 }
 
-KursBDClass::del(char *query_string)
+void KursBDClass::del(char *query_string)
 {
-    cout << query_string << endl;
+
 }
 
-KursBDClass::merge(char *if_BD, char *of_BD)
+int KursBDClass::merge(char *if_BD, char *of_BD)
 {
-    cout << if_BD << of_BD << endl;
+
 
     return 0;
 }

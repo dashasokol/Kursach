@@ -1,6 +1,8 @@
 #ifndef KURSBDCLASS_H
 #define KURSBDCLASS_H
 
+#include <stdio.h>
+
 #define NAMELEN 50 // максимальная длинна имени и фамилии
 #define POSLEN 100 // максимальная длинна названия должности
 #define TABLELINES 100 // максимальное количество записей в таблице
@@ -22,8 +24,8 @@ class KursBDClass
 {
     struct table tb[TABLELINES]; // структура с данными
     int table_length; // количество записей в БД
-    FILE bd_out_file; // файл вывода
-    int parse(char *string_to_parse, int el_id);  // разбиение строки
+    FILE *bd_out_file; // файл вывода
+    int parse(char *string_to_parse);  // разбиение строки
     int findId(int id); // поиск элемента
     int create(char *BD_file_name); // создание новой базы
     int checkSpace();
