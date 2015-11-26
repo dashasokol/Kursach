@@ -1,6 +1,8 @@
 #include "kursbdclass.h"
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "helpfun.h"
 
 KursBDClass::KursBDClass()
@@ -25,7 +27,7 @@ int KursBDClass::open(char *BD_file_name)
     // считываем данные в структуру
     while(fgets(buff, LINELEN, bd_out_file))
     {
-        if (parse(buff) == 1)
+        if (parse(buff) == END_WRONG_FORMAT)
         {
             fprintf(stderr, "Line %d: Wrong string format", table_length + 1);
         }
@@ -33,7 +35,7 @@ int KursBDClass::open(char *BD_file_name)
         table_length++;
     }
 
-    return 0;
+    return END_OK;
 }
 
 void KursBDClass::close()
@@ -45,11 +47,37 @@ int KursBDClass::parse(char *string_to_parse)
 {
     int pos = 0;
 
+
     if (string_to_parse[pos] == '#')
-        return 0;
+        return END_OK;
 
 
 
+
+    // извлекаем идентификатор
+    pos = get_value(&tb[table_length].id, string_to_parse);
+    string_to_parse = string_to_parse + pos;
+
+    // извлекаем имя
+    pos = indexOf(string_to_parse, (char *) SEPARATOR, LEFT);
+
+
+    return END_OK;
+}
+
+int KursBDClass::get_value(int *var, char *val)
+{
+    int pos = indexOf(val, (char *) SEPARATOR, LEFT);
+    char tmp[LINELEN] = "";
+
+    strncat(tmp, string_to_parse, pos);
+    *var = atoi(tmp);
+
+    return pos;
+}
+
+int KursBDClass::get_value(char *var, char *val)
+{
 
     return 0;
 }
@@ -72,9 +100,9 @@ int KursBDClass::checkSpace()
     return 0;
 }
 
-void KursBDClass::select(char* query_string)
+char *KursBDClass::select(char* query_string)
 {
-
+    return (char *) "dd";
 }
 
 void KursBDClass::insert(char *insert_string)

@@ -7,14 +7,23 @@
 #define POSLEN 100 // максимальная длинна названия должности
 #define TABLELINES 100 // максимальное количество записей в таблице
 #define LINELEN 255 // максимальная длинна строки
+#define SEPARATOR ';' // символ разделитель полей
+#define STRING_END '\"' // символ ограничитель строковых значений
 
 struct table
 {
-    int id; // идентификатор
+    u_int id; // идентификатор
     char fname[NAMELEN]; // имя
     char lname[NAMELEN]; // фамилия
-    int years; // количество лет
+    u_int years; // количество лет
     char position[POSLEN]; // должность
+};
+
+enum
+{
+    END_NOT_FOUND = -1,
+    END_OK = 0,
+    END_WRONG_FORMAT
 };
 
 /*
@@ -26,6 +35,8 @@ class KursBDClass
     int table_length; // количество записей в БД
     FILE *bd_out_file; // файл вывода
     int parse(char *string_to_parse);  // разбиение строки
+    int get_value(int var, char *val); // get_value для целочисленной переменной
+    int get_value(char *var, char *val); // get_value для строковой переменной
     int findId(int id); // поиск элемента
     int create(char *BD_file_name); // создание новой базы
     int checkSpace();
@@ -33,7 +44,7 @@ public:
     KursBDClass();
     int open(char *BD_file_name); // открытие базы
     void close(); // закрытие базы
-    void select(char *query_string); // выборка
+    char *select(char *query_string); // выборка
     void insert(char *insert_string); // вставка
     void del(char *query_string); // удаление
     int merge(char *if_BD, char *of_BD); // слияние
