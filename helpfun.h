@@ -110,14 +110,6 @@ int fmwrite(FILE * file, void * Data, int size, int from);
 int fmclean(FILE * file, u_int size, u_int from);
 
 /**
- * @fn char *inttostr(int number)
- * @brief Функция перевода целого числа в строку
- * @param number - Цифра для перевода
- * @return Строкове представление числа
- */
-char *inttostr(int number);
-
-/**
  * @fn int strmcmp(const char *str1, const char *str2)
  * @brief Оболочка для функции strcmp, исключающая ошибки
  * @param str1 - Первая строка
@@ -133,5 +125,14 @@ int strmcmp(const char *str1, const char *str2);
  * @return 0 - файл найден / 2 - файл не найден
  */
 int fileExist(char *file);
+
+/**
+ * @fn int isRigthSymbols(char *string, char *symbols);
+ * @brief Функция проверяющая,
+ * @param file - Полное имя файла
+ * @return 0 - файл найден / 2 - файл не найден
+ */
+int isRigthSymbols(char *string, char *symbols);
+
 
 #endif /* CONF_H_ */

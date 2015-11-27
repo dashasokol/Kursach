@@ -9,6 +9,7 @@
 #define LINELEN 255 // максимальная длинна строки
 #define SEPARATOR ';' // символ разделитель полей
 #define STRING_END '\"' // символ ограничитель строковых значений
+#define MAX_COLUMNS 5 // максимальное количество колонок в таблице
 
 struct table
 {
@@ -21,9 +22,9 @@ struct table
 
 enum
 {
-    END_NOT_FOUND = -1,
-    END_OK = 0,
-    END_WRONG_FORMAT
+    END_WRONG_FORMAT = -2, // неверный формат
+    END_NOT_FOUND = -1,   // поиск завершился неудачей
+    END_OK = 0,           // функция завершилась без ошибки
 };
 
 /*
