@@ -47,35 +47,35 @@ int KursBDClass::parse(char *string_to_parse)
     if (string_to_parse[pos] == '#')
         return END_OK;
 
-    if (col_match(string_to_parse, (char *) SEPARATOR) < MAX_COLUMNS - 1)
+    if (colMatch(string_to_parse, (char *) SEPARATOR) < MAX_COLUMNS - 1)
         return END_WRONG_FORMAT;
 
     // извлекаем идентификатор
-    if ((pos = get_value(&tb[table_length].id, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(&tb[table_length].id, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем имя
-    if ((pos = get_value(tb[table_length].fname, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(tb[table_length].fname, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем фамилию
-    if ((pos = get_value(tb[table_length].lname, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(tb[table_length].lname, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем количество лет
-    if ((pos = get_value(&tb[table_length].years, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(&tb[table_length].years, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем должность
-    if ((pos = get_value(tb[table_length].position, string_to_parse)) == END_WRONG_FORMAT)
+    if ((pos = getValue(tb[table_length].position, string_to_parse)) == END_WRONG_FORMAT)
         return pos;
 
     table_length++;
@@ -83,13 +83,13 @@ int KursBDClass::parse(char *string_to_parse)
     return END_OK;
 }
 
-int KursBDClass::get_value(unsigned int *var, char *val)
+int KursBDClass::getValue(unsigned int *var, char *val)
 {
     // поиск символа разделителя
     int pos = indexOf(val, (char *) SEPARATOR, LEFT);
 
     // если символ разделитель не найден
-    if (pos == -1)
+    if (pos == END_NOT_FOUND)
         return END_WRONG_FORMAT;
 
     // если найдено пустое значение
@@ -102,7 +102,9 @@ int KursBDClass::get_value(unsigned int *var, char *val)
     // найдено не пустое значение
     char *tmp = (char *) malloc(pos+1);
 
+    // обнуляем строку
     tmp[0] = '\0';
+
     strncat(tmp, val, pos);
 
     if (strspn(tmp, (char *) NUMBER) != strlen(tmp))
@@ -115,7 +117,7 @@ int KursBDClass::get_value(unsigned int *var, char *val)
     return pos;
 }
 
-int KursBDClass::get_value(char *var, char *val)
+int KursBDClass::getValue(char *var, char *val)
 {
     int pos;
 
@@ -137,6 +139,8 @@ int KursBDClass::get_value(char *var, char *val)
 
     // найдено не пустое значение
     char *tmp = (char *) malloc(pos+1);
+
+    // обнуляем строку
     tmp[0] = '\0';
 
     strncat(tmp, val, pos);
@@ -149,11 +153,17 @@ int KursBDClass::get_value(char *var, char *val)
     return pos;
 }
 
-int KursBDClass::findId(int id)
-{
+//int KursBDClass::findId(unsigned int id)
+//{
+//    unsigned int i; // счетчик
 
-    return 0;
-}
+//    // botv id среди tb[i].id
+//    for (i = 0; i < table_length; i++)
+//        if (tb[i].id == id)
+//            return i;
+
+//    return END_NOT_FOUND;
+//}
 
 int KursBDClass::create(char *BD_file_name)
 {
@@ -162,19 +172,96 @@ int KursBDClass::create(char *BD_file_name)
     return 0;
 }
 
-int KursBDClass::checkSpace()
+void KursBDClass::valueInsert(char *string, char *value)
 {
-    return 0;
+    strcat(string, value);
+    strcat(string, (char *) SEPARATOR);
 }
 
-char *KursBDClass::select(char* query_string)
+void KursBDClass::stringInsert(char *string, struct table insert_value)
 {
-    return (char *) "dd";
+    char *number = (char *) malloc(LINELEN);
+
+    // обнуляем строку
+    number[0] = '\0';
+
+    itoa(insert_value.id, number, 10);
+    valueInsert(string, number);
+    number[0] = '\0';
+
+    valueInsert(string, insert_value.fname);
+    valueInsert(string, insert_value.lname);
+
+    itoa(insert_value.years, number, 10);
+    valueInsert(string, number);
+    number[0] = '\0';
+
+    valueInsert(string, insert_value.position);
+
+    strcat(string, (char *) "\n");
+
+    free(number);
+}
+void KursBDClass::select(char *tmp, char *field, unsigned int value)
+{
+    unsigned int i; // счетчик
+
+    // обнуляем строку
+    tmp[0] = '\0';
+
+    strcat(tmp, (char *) DESCRIPT);
+
+    if (strcmp(field, "id") == 0)
+    {
+        for (i = 0; i < table_length; i++)
+            if (tb[i].id == value)
+                stringInsert(tmp, tb[i]);
+    }
+    else if (strcmp(field, "years") == 0)
+    {
+            for (i = 0; i < table_length; i++)
+                if (tb[i].years == value)
+                    stringInsert(tmp, tb[i]);
+    }
+    else
+        fprintf(stderr, "Wrong field name %s\n\r", field);
 }
 
-void KursBDClass::insert(char *insert_string)
+void KursBDClass::select(char *tmp, char *field, char *value)
 {
+    unsigned int i; // счетчик
 
+    // обнуляем строку
+    tmp[0] = '\0';
+
+    strcat(tmp, (char *) DESCRIPT);
+
+    if (strcmp(field, "fname") == 0)
+    {
+        for (i = 0; i < table_length; i++)
+            if (strcmp(tb[i].fname, value) == 0)
+                stringInsert(tmp, tb[i]);
+    }
+    else if (strcmp(field, "lname") == 0)
+    {
+            for (i = 0; i < table_length; i++)
+                if (strcmp(tb[i].lname, value) == 0)
+                    stringInsert(tmp, tb[i]);
+    }
+    else if (strcmp(field, "position") == 0)
+    {
+            for (i = 0; i < table_length; i++)
+                if (strcmp(tb[i].position, value) == 0)
+                    stringInsert(tmp, tb[i]);
+    }
+    else
+        fprintf(stderr, "Wrong field name %s\n\r", field);
+
+}
+
+void KursBDClass::insert(char *string_to_add, struct table insert_value)
+{
+    stringInsert(string_to_add, insert_value);
 }
 
 void KursBDClass::del(char *query_string)

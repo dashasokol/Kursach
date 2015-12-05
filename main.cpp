@@ -8,16 +8,20 @@ using namespace std;
 
 
 
-
 int main()
 {
     // создаём экземпляр класса
     KursBDClass mainBD;
 
+    // указатель на резулдьтирующую строку
+    char *tmp = (char *) malloc(LINELEN * TABLELINES);
+
     // открываем базу данных
     mainBD.open((char *) MAINDBPATH);
 
+    mainBD.select(tmp, (char *) "position", (char *) "Admin");
 
+    printf(tmp);
 
     // закрываем файл базы данных
     mainBD.close();

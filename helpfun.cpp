@@ -145,7 +145,7 @@ int spacecut(char *out, char *str, enum vector_type vector)
 }
 
 // Функция посчёта вхождений подстроки в строку
-int col_match(char *string, char *substring)
+int colMatch(char *string, char *substring)
 {
     int index = -1; // новое положение коретки
     unsigned int ret = 0;    // счтётчик

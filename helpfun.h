@@ -81,13 +81,13 @@ int charcut(char *out, char *str, char *substring);
 int spacecut(char *out, char *str, enum vector_type vector);
 
 /**
- * @fn int col_match(char *string, char *substring)
+ * @fn int colMatch(char *string, char *substring)
  * @brief Функция посчёта вхождений подстроки в строку
  * @param string
  * @param substring
  * @return Количество вхождений
  */
-int col_match(char *string, char *substring);
+int colMatch(char *string, char *substring);
 
 /**
  * @fn int fmwrite(FILE * file, void * Data, int size, int from)
