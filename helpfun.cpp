@@ -3,7 +3,6 @@
  *  @brief	Вспомогательные функции, которые нужны в большинстве программ, но для которых не существует библиотек в базовом языке
  * 
  */
-
 #include <stdio.h>                        // printf, scanf, NULL 
 #include <string.h>                       // strstr, str[n]cat, strlen
 #include <stdlib.h>                       // malloc, free, rand
@@ -13,26 +12,24 @@
 // Функция вычиления первого вхождения подстроки в строку
 int indexOf(char *str, char *substring, enum vector_type vector)
 {
-    char string[SSIZE]; // копия строки для поиска
     char *rem_string;	// указатель на обрезанную строку
     int i; 		// счётчик
 
-    strcpy(string, str);
     if (vector == LEFT) {
-        rem_string = strstr(string, substring); // находим первое вхождение
+        rem_string = strstr(str, substring); // находим первое вхождение
 
         /* если найден разделитель высчитать его местоположение */
         if (rem_string)
-            return strlen(string) - strlen(rem_string);
+            return strlen(str) - strlen(rem_string);
     }
     else if (vector == RIGHT)
     {
         /* находим последнее вхождение */
-        for (i=strlen(string)-1; i >= 0; i--)
+        for (i=strlen(str)-1; i >= 0; i--)
         {
-            rem_string = strstr(&string[i], substring);
+            rem_string = strstr(&str[i], substring);
             if (rem_string)
-                return strlen(string) - strlen(rem_string);
+                return strlen(str) - strlen(rem_string);
         }
     }
     return -1;
@@ -41,10 +38,10 @@ int indexOf(char *str, char *substring, enum vector_type vector)
 // Функция удаления всех вхождений подстроки в строку
 int charcut(char *out, char *str, char *substring)
 {
-    u_int i,                                            // счётчик
+    unsigned int i,                                            // счётчик
           j;                                            // счётчик
     char string[STRING_MAX_LINE];                       // строка, которая будет преобразовываться
-    u_int found = 0;                                      // символ найден
+    unsigned int found = 0;                                      // символ найден
     
     /* отчищаем строку для изменения */
     memset(string, 0, sizeof(string));
@@ -74,7 +71,7 @@ int spacecut(char *out, char *str, enum vector_type vector)
 {
     char string[STRING_MAX_LINE];                       // строка, которая будет преобразовываться
     char cut_string[strlen(str)];                       // строка, которая будет вырезана из string
-    u_int i, 											// счётчик
+    unsigned int i, 											// счётчик
           j;                                            // счётчик
 
     if (strspn(str, " ") != strlen(str))
@@ -111,7 +108,7 @@ int spacecut(char *out, char *str, enum vector_type vector)
         /* удаляем пробелы из конца строки */
         if (vector == RIGHT || vector == RIGHTLEFT)
         {
-            while (indexOf(string, cut_string, RIGHT) > -1 && (u_int) indexOf(string, cut_string, RIGHT) == strlen(string)-strlen(cut_string))
+            while (indexOf(string, cut_string, RIGHT) > -1 && (unsigned int) indexOf(string, cut_string, RIGHT) == strlen(string)-strlen(cut_string))
                 strcat(cut_string, " ");
 
             /* вычисляем строку вывода */
@@ -151,7 +148,7 @@ int spacecut(char *out, char *str, enum vector_type vector)
 int col_match(char *string, char *substring)
 {
     int index = -1; // новое положение коретки
-    u_int ret = 0;    // счтётчик
+    unsigned int ret = 0;    // счтётчик
 
     /* обрезаем строку при нахождении подстроки в троке */
     while (indexOf(&string[index+1], substring, LEFT) >= 0)
@@ -166,11 +163,11 @@ int col_match(char *string, char *substring)
 // Функция записи сиволов в конкретную позицию файла
 int fmwrite(FILE * file, void * Data, int size, int from)
 {
-    u_int s;          // размер файла
-    u_int nsize;      // размер итогового файла
-    u_int alloc;      // требуемый размер буфера, значение меньшее, чем BSIZE или равное ему
+    unsigned int s;          // размер файла
+    unsigned int nsize;      // размер итогового файла
+    unsigned int alloc;      // требуемый размер буфера, значение меньшее, чем BSIZE или равное ему
     int pose;       // текщая позиция
-    u_int read;       // размер смещаемой информации
+    unsigned int read;       // размер смещаемой информации
     char * temp;    // буфер, содержащий строку для смещения
    
     /* переходим в конец файла */
@@ -217,14 +214,14 @@ int fmwrite(FILE * file, void * Data, int size, int from)
 }
 
 // Функция удаления сиволов с конкретной позиции файла
-int fmclean(FILE * file, u_int size, u_int from)
+int fmclean(FILE * file, unsigned int size, unsigned int from)
 {
-    u_int s;                      // размер файла
-    u_int nsize;                  // размер итогового файла
-    u_int alloc;                  // требуемый размер буфера, значение меньшее, чем BSIZE или равное ему
-    u_int pose;                   // текщая позиция
+    unsigned int s;                      // размер файла
+    unsigned int nsize;                  // размер итогового файла
+    unsigned int alloc;                  // требуемый размер буфера, значение меньшее, чем BSIZE или равное ему
+    unsigned int pose;                   // текщая позиция
     char *temp;                 // буфер, содержащий строку для смещения
-    u_int offset = from + size;   // начало следующего блока данных
+    unsigned int offset = from + size;   // начало следующего блока данных
     char last[1];     // последний символ
     
     /* переходим в конец файла */

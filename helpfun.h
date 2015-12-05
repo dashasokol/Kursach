@@ -12,6 +12,7 @@
 #define TYPE "[]_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"   ///< Символы из которых может состоять тип
 #define PATH "/_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"     ///< Символы из которых может состоять путь
 #define WORD "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"                 ///< Символы из которых может состоять слово
+#define NUMBER "0123456789"                                                            ///< Символы из которых может состоять число
 #define BSIZE 60000                                                                 ///< Максимальный размер временного буфера
 #define SSIZE 255
 
@@ -107,7 +108,7 @@ int fmwrite(FILE * file, void * Data, int size, int from);
  * @param from - Смещение относительно начала файла
  * @return Код ошибки / удачного завершения
  */
-int fmclean(FILE * file, u_int size, u_int from);
+int fmclean(FILE * file, unsigned int size, unsigned int from);
 
 /**
  * @fn int strmcmp(const char *str1, const char *str2)
@@ -125,14 +126,5 @@ int strmcmp(const char *str1, const char *str2);
  * @return 0 - файл найден / 2 - файл не найден
  */
 int fileExist(char *file);
-
-/**
- * @fn int isRigthSymbols(char *string, char *symbols);
- * @brief Функция проверяющая,
- * @param file - Полное имя файла
- * @return 0 - файл найден / 2 - файл не найден
- */
-int isRigthSymbols(char *string, char *symbols);
-
 
 #endif /* CONF_H_ */

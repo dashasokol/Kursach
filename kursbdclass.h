@@ -1,22 +1,20 @@
 #ifndef KURSBDCLASS_H
 #define KURSBDCLASS_H
 
-#include <stdio.h>
-
 #define NAMELEN 50 // максимальная длинна имени и фамилии
 #define POSLEN 100 // максимальная длинна названия должности
 #define TABLELINES 100 // максимальное количество записей в таблице
 #define LINELEN 255 // максимальная длинна строки
-#define SEPARATOR ';' // символ разделитель полей
-#define STRING_END '\"' // символ ограничитель строковых значений
+#define SEPARATOR ";\0" // символ разделитель полей
+#define STRING_END "\"\0" // символ ограничитель строковых значений
 #define MAX_COLUMNS 5 // максимальное количество колонок в таблице
 
 struct table
 {
-    u_int id; // идентификатор
+    unsigned int id; // идентификатор
     char fname[NAMELEN]; // имя
     char lname[NAMELEN]; // фамилия
-    u_int years; // количество лет
+    unsigned int years; // количество лет
     char position[POSLEN]; // должность
 };
 
@@ -36,7 +34,7 @@ class KursBDClass
     int table_length; // количество записей в БД
     FILE *bd_out_file; // файл вывода
     int parse(char *string_to_parse);  // разбиение строки
-    int get_value(int var, char *val); // get_value для целочисленной переменной
+    int get_value(unsigned int *var, char *val); // get_value для целочисленной переменной
     int get_value(char *var, char *val); // get_value для строковой переменной
     int findId(int id); // поиск элемента
     int create(char *BD_file_name); // создание новой базы

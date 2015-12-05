@@ -3,28 +3,24 @@
 
 using namespace std;
 
-int abs(int f);
-int abs(float f);
+#define MAINDBPATH "C:\\Users\\Skyline\\Documents\\build-Kursach-Desktop_Qt_5_5_0_MinGW_32bit-Debug\\debug\\KurBD"
+#define SECONDDBPATH "C:\\Users\\Skyline\\Documents\\build-Kursach-Desktop_Qt_5_5_0_MinGW_32bit-Debug\\debug\\ScnBD"
 
-int abs(int f)
-{
-    cout << f << endl;
-    return 0;
-}
 
-int abs(float f)
-{
-    cout << f << endl;
-    return 0;
-}
+
 
 int main()
 {
-    float sd = 3;
+    // создаём экземпляр класса
+    KursBDClass mainBD;
 
-    if (abs(sd))
-        cout << '\n';
+    // открываем базу данных
+    mainBD.open((char *) MAINDBPATH);
 
+
+
+    // закрываем файл базы данных
+    mainBD.close();
     return 0;
 }
 
