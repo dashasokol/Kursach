@@ -8,8 +8,9 @@
 #define SEPARATOR ";" // символ разделитель полей
 #define STRING_END "\"" // символ ограничитель строковых значений
 #define MAX_COLUMNS 5 // максимальное количество колонок в таблице
-#define DESCRIPT "#ID|FIRSTNAME|LASTNAME|YEARS|POSITION\n"
+#define DESCRIPT "#ID|FIRSTNAME|LASTNAME|YEARS|POSITION\n" // описание таблицы
 
+// структура таблицы
 struct table
 {
     unsigned int id; // идентификатор
@@ -46,7 +47,7 @@ class KursBDClass
     void valueInsert(char *string, char *value); // добавление значения в строку формата БД
     void stringInsert(char *string, struct table insert_value); // добавление строки в выводную строку формата БД
 public:
-    KursBDClass();
+    KursBDClass(); // инициализация
     int open(char *BD_file_name); // открытие базы
     void close(); // закрытие базы
     void select(char *s_file_name, char *field, unsigned int value); // выборка
@@ -54,6 +55,7 @@ public:
     void insert(struct table insert_value); // вставка
     void del(char *field, unsigned int value); // выборка
     void del(char *field, char *value); // выборка
+    void sort(char *field); // сортировка
     int merge(char *if_BD, char *of_BD); // слияние
 };
 

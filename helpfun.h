@@ -26,6 +26,11 @@ enum vector_type {
     RIGHTLEFT = 4,      // с начала и с конца строки
 };
 
+enum {
+    T_INT = 1,            // тип int
+    T_CHAR = 2,          // тип char
+};
+
 /**
  * @fn int indexOf(char *str, char *substring, enum vector_type vector)
  * @brief Функция вычиления первого вхождения подстроки в строку
@@ -128,5 +133,8 @@ int strmcmp(const char *str1, const char *str2);
 int fileExist(char *file);
 
 FILE *fmopen(char *file, const char *flag, const char *errstr);
+
+void qsort(int *v, void *mas, int maslen, unsigned int left, unsigned int right, int type);
+void swap(int *mas, int var1, int var2);
 
 #endif /* CONF_H_ */

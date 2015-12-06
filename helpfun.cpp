@@ -317,3 +317,50 @@ FILE *fmopen(char *file, const char *flag, const char *errstr)
 
     return temp;
 }
+
+void qsort(int *v, void *mas, int maslen, unsigned int left, unsigned int right, int type)
+{
+    unsigned int i = 0;  // счетчик
+    unsigned int last = 0; // последний элемент
+
+    swap(v, left, (left + right)/2);
+    last = left;
+
+    if (type == T_INT)
+     {
+        int *m;
+        m = (int *) mas;
+
+        for (i = left+1; i <= right; i++)
+        {
+            if (m[i] < m[left])
+                swap(v, ++last, i);
+        }
+    }
+    else if (type == T_CHAR)
+    {
+        char **m;
+        m = (char **) mas;
+
+        for (i = left+1; i <= right; i++)
+        {
+            if (strmcmp(m[i], m[left]) == -1)
+                swap(v, ++last, i);
+        }
+    }
+    else
+        fprintf(stderr, "Wrong variable type\n");
+        return;
+
+    swap(v, left, last);
+    qsort(v, mas, maslen, left, last-1, type);
+    qsort(v, mas, maslen, last+1, right, type);
+}
+
+void swap(int *mas, int var1, int var2)
+{
+    int tmp;
+    tmp = mas[var1];
+    mas[var1] = mas[var2];
+    mas[var2] = tmp;
+}

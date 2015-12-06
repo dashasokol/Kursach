@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <typeinfo>
 #include "helpfun.h"
 #include "kursbdclass.h"
+
 
 KursBDClass::KursBDClass()
 {
@@ -250,7 +252,7 @@ void KursBDClass::select(char *s_file_name, char *field, char *value)
 
     strcat(tmp, (char *) DESCRIPT);
 
-    if (strcmp(field, "fname") == 0)
+    if (strmcmp(field, "fname") == 0)
     {
         for (i = 0; i < table_length; i++)
             if (strmcmp(tb[i].fname, value) == 0)
@@ -329,7 +331,7 @@ void KursBDClass::del(char *field, char *value)
 {
     int i; // счетчик
 
-    if (strcmp(field, "fname") == 0)
+    if (strmcmp(field, "fname") == 0)
     {
         for (i = table_length-1; i >= 0; i--)
             if (strmcmp(tb[i].fname, value) == 0)
@@ -354,6 +356,77 @@ void KursBDClass::del(char *field, char *value)
 int KursBDClass::del_from_db(FILE *bd, int size, int pos)
 {
     return fmclean(bd, size, pos);
+}
+
+void KursBDClass::sort(char *field)
+{
+    int order[table_length]; // массив, по которому определяется порядок
+    int type;
+    unsigned int i;
+    void *val;
+
+    // заполняем массив
+    for (i = 1; i < table_length; i++)
+        order[i] = i;
+
+    if (strmcmp(field, "id") == 0)
+    {
+        int values[table_length];
+
+        type = T_INT;
+        for (i = 1; i < table_length; i++)
+            values[i] = tb[i].id;
+
+        val = (void *) values;
+    }
+    else if (strmcmp(field, "years") == 0)
+    {
+        int values[table_length];
+
+        type = T_INT;
+        for (i = 1; i < table_length; i++)
+            values[i] = tb[i].years;
+
+        val = (void *) values;
+    }
+
+    else if (strmcmp(field, "fname") == 0)
+    {
+        char *values[table_length];
+
+        type = T_CHAR;
+        for (i = 1; i < table_length; i++)
+            strcpy(values[i], tb[i].fname);
+
+        val = (void *) values;
+    }
+    else if (strmcmp(field, "lname") == 0)
+    {
+        char *values[table_length];
+
+        type = T_CHAR;
+        for (i = 1; i < table_length; i++)
+            strcpy(values[i], tb[i].lname);
+
+        val = (void *) values;
+    }
+    else if (strmcmp(field, "position") == 0)
+    {
+        char *values[table_length];
+
+        type = T_CHAR;
+        for (i = 1; i < table_length; i++)
+            strcpy(values[i], tb[i].position);
+
+        val = (void *) values;
+    }
+    else
+    {
+        fprintf(stderr, "Wrong field name %s\n", field);
+        return;
+    }
+
+    qsort(order, val, table_length-1, 0, table_length-1, type);
 }
 
 int KursBDClass::merge(char *if_BD, char *of_BD)

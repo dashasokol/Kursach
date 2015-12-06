@@ -48,7 +48,7 @@ int main()
     // открываем базу данных
     mainBD.open(mpath);
 
-    mainBD.del((char *) "fname", (char *) "Uriy");
+    mainBD.sort("fname");
 
     // закрываем файл базы данных
     mainBD.close();
