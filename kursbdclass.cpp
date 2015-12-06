@@ -19,15 +19,7 @@ int KursBDClass::open(char *BD_file_name)
     int buff_len = 0;          // запоминанете длиннай строки, на случай, если строка не коректа, но после неё следуют корректные
 
     // открываем файл
-    bd_out_file = fopen(BD_file_name, "r+");
-
-    // если файл не открыт
-    if (!bd_out_file)
-    {
-        // записываем ошибку в поток вывода отладочных сообщений
-        perror("KursBDClass::open");
-        return 1;
-    }
+    bd_out_file = fmopen(BD_file_name, "r+", "KursBDClass::open");
 
     // считываем данные в структуру
     while(fgets(buff, LINELEN, bd_out_file))
@@ -170,11 +162,9 @@ int KursBDClass::getValue(char *var, char *val)
     return pos;
 }
 
-int KursBDClass::create(char *BD_file_name)
+int KursBDClass::clean_db(FILE *bd)
 {
-
-
-    return 0;
+    return fmclean(bd, -1, 0);
 }
 
 void KursBDClass::valueInsert(char *string, char *value)
@@ -209,10 +199,10 @@ void KursBDClass::stringInsert(char *string, struct table insert_value)
 
     free(number);
 }
-void KursBDClass::select(char *tmp, char *field, unsigned int value)
+void KursBDClass::select(char *s_file_name, char *field, unsigned int value)
 {
     unsigned int i; // счетчик
-
+    char *tmp = (char *) malloc(LINELEN * TABLELINES);
     // обнуляем строку
     tmp[0] = '\0';
 
@@ -235,11 +225,22 @@ void KursBDClass::select(char *tmp, char *field, unsigned int value)
 
     // убираем последний перенос строки
     tmp[strlen(tmp)-1] = '\0';
+
+    // открываем файл для select
+    FILE *sel_file = fmopen(s_file_name, "r+", "KursBDClass::select");
+
+    // стираем старые данные
+    clean_db(sel_file);
+
+    // добавляем данные в файл
+    add_to_bd(sel_file, tmp, 0);
+    free(tmp);
 }
 
-void KursBDClass::select(char *tmp, char *field, char *value)
+void KursBDClass::select(char *s_file_name, char *field, char *value)
 {
     unsigned int i; // счетчик
+    char *tmp = (char *) malloc(LINELEN * TABLELINES);
 
     // обнуляем строку
     tmp[0] = '\0';
@@ -270,6 +271,15 @@ void KursBDClass::select(char *tmp, char *field, char *value)
     // убираем последний перенос строки
     tmp[strlen(tmp)-1] = '\0';
 
+    // открываем файл для select
+    FILE *sel_file = fmopen(s_file_name, "r+", "KursBDClass::select");
+
+    // стираем старые данные
+    clean_db(sel_file);
+
+    // добавляем данные в файл
+    add_to_bd(sel_file, tmp, 0);
+    free(tmp);
 }
 
 void KursBDClass::insert(struct table insert_value)
@@ -283,13 +293,13 @@ void KursBDClass::insert(struct table insert_value)
     // убираем последний перенос строки
     tmp[strlen(tmp) - 1] = '\0';
 
-    add_to_bd(bd_out_file, tmp);
+    add_to_bd(bd_out_file, tmp, counter);
     free(tmp);
 }
 
-int KursBDClass::add_to_bd(FILE *bd, char *string)
+int KursBDClass::add_to_bd(FILE *bd, char *string, int pos)
 {
-    return fmwrite(bd, string, strlen(string), counter);
+    return fmwrite(bd, string, strlen(string), pos);
 }
 
 void KursBDClass::del(char *query_string)

@@ -104,11 +104,11 @@ int fmwrite(FILE * file, void * Data, int size, int from);
  * @fn int fmclean(FILE * file, int size, int from)
  * @brief Функция удаления сиволов с конкретной позиции файла
  * @param file - Указатель на файл
- * @param size - Размер блока данных
+ * @param size - Размер блока данных (если -1 - отчистить весь файл)
  * @param from - Смещение относительно начала файла
  * @return Код ошибки / удачного завершения
  */
-int fmclean(FILE * file, unsigned int size, unsigned int from);
+int fmclean(FILE * file, int size, unsigned int from);
 
 /**
  * @fn int strmcmp(const char *str1, const char *str2)
@@ -126,5 +126,7 @@ int strmcmp(const char *str1, const char *str2);
  * @return 0 - файл найден / 2 - файл не найден
  */
 int fileExist(char *file);
+
+FILE *fmopen(char *file, const char *flag, const char *errstr);
 
 #endif /* CONF_H_ */

@@ -7,8 +7,18 @@ using namespace std;
 #define DBPATH "C:\\Users\\Skyline\\Documents\\build-Kursach-Desktop_Qt_5_5_0_MinGW_32bit-Debug\\debug\\"
 #define MAINDBNAME "KurBD"
 #define SECONDDBNAME "ScnBD"
+#define SELECTBDNAME "SelectBD"
+#define SORTBDNAME "SortBD"
+#define SORTSCNBDNAME "SortscnBD"
 #define FILENAMELEN 255
 
+void get_ffile_name(char *fullname, char *name);
+
+void get_ffile_name(char *fullname, char *name)
+{
+    strcpy(fullname, (char *) DBPATH);
+    strcat(fullname, name);
+}
 
 int main()
 {
@@ -16,27 +26,29 @@ int main()
     KursBDClass mainBD;
     char mpath[FILENAMELEN];
     char spath[FILENAMELEN];
+    char sopath[FILENAMELEN];
+    char so2path[FILENAMELEN];
+    char selpath[FILENAMELEN];
 
-    strcpy(mpath, (char *) DBPATH);
-    strcat(mpath, (char *) MAINDBNAME);
-
-    strcpy(spath, (char *) DBPATH);
-    strcat(spath, (char *) SECONDDBNAME);
+    get_ffile_name(mpath, (char *) MAINDBNAME);
+    get_ffile_name(spath, (char *) SECONDDBNAME);
+    get_ffile_name(selpath, (char *) SELECTBDNAME);
+    get_ffile_name(sopath, (char *) SORTBDNAME);
+    get_ffile_name(so2path, (char *) SORTSCNBDNAME);
 
     // указатель на резулдьтирующую строку
-    char *tmp = (char *) malloc(LINELEN * TABLELINES);
-    struct table ins_d;
-
-    ins_d.id = 15;
-    strcpy(ins_d.fname, (char *) "Nickita");
-    strcpy(ins_d.lname, (char *) "Levin");
-    ins_d.years = 59;
-    strcpy(ins_d.position, (char *) "CT");
+//    struct table ins_d;
+//
+//    ins_d.id = 15;
+//    strcpy(ins_d.fname, (char *) "Nickita");
+//    strcpy(ins_d.lname, (char *) "Levin");
+//    ins_d.years = 59;
+//    strcpy(ins_d.position, (char *) "CT");
 
     // открываем базу данных
     mainBD.open(mpath);
 
-    mainBD.insert(ins_d);
+    mainBD.select(selpath, (char *) "years", 46);
 
     // закрываем файл базы данных
     mainBD.close();

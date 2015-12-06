@@ -219,7 +219,7 @@ int fmwrite(FILE * file, void * Data, int size, int from)
 }
 
 // Функция удаления сиволов с конкретной позиции файла
-int fmclean(FILE * file, unsigned int size, unsigned int from)
+int fmclean(FILE * file, int size, unsigned int from)
 {
     unsigned int s;                      // размер файла
     unsigned int nsize;                  // размер итогового файла
@@ -234,7 +234,11 @@ int fmclean(FILE * file, unsigned int size, unsigned int from)
     
     /* определяем размер итогового файла */
     s = ftell(file);
-    
+
+    // отчистить весь файл
+    if (size < 0)
+        size = s;
+
     if (s < from + size)
         size = s - from;
 
@@ -299,4 +303,17 @@ int fileExist(char *file)
     fclose(config);  // закрываем файл
     
     return 0;
+}
+
+// функция открывающая файл
+FILE *fmopen(char *file, const char *flag, const char *errstr)
+{
+    FILE *temp = fopen(file, flag);
+
+    // если файл не открыт
+    if (!temp)
+        // записываем ошибку в поток вывода отладочных сообщений
+        perror(errstr);
+
+    return temp;
 }

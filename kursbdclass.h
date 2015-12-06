@@ -38,17 +38,16 @@ class KursBDClass
     int parse(char *string_to_parse);  // разбиение строки
     int getValue(unsigned int *var, char *val); // get_value для целочисленной переменной
     int getValue(char *var, char *val); // get_value для строковой переменной
-    int create(char *BD_file_name); // создание новой базы
-    int add_to_bd(FILE *bd, char *string); // добавить в конец
-    int add_to_bd(FILE *bd, char *string, char *field); // добавить в отсортированную БД
+    int clean_db(FILE *bd); // удаление старых данных
+    int add_to_bd(FILE *bd, char *string, int pos); // добавить в файл
     void valueInsert(char *string, char *value); // добавление значения в строку формата БД
     void stringInsert(char *string, struct table insert_value); // добавление строки в выводную строку формата БД
 public:
     KursBDClass();
     int open(char *BD_file_name); // открытие базы
     void close(); // закрытие базы
-    void select(char *tmp, char *field, unsigned int value); // выборка
-    void select(char *tmp, char *field, char *value); // выборка
+    void select(char *s_file_name, char *field, unsigned int value); // выборка
+    void select(char *s_file_name, char *field, char *value); // выборка
     void insert(struct table insert_value); // вставка
     void del(char *query_string); // удаление
     int merge(char *if_BD, char *of_BD); // слияние
