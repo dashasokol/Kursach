@@ -48,7 +48,7 @@ int main()
     // открываем базу данных
     mainBD.open(mpath);
 
-    mainBD.select(selpath, (char *) "years", 46);
+    mainBD.del((char *) "fname", (char *) "Uriy");
 
     // закрываем файл базы данных
     mainBD.close();

@@ -17,6 +17,8 @@ struct table
     char lname[NAMELEN]; // фамилия
     unsigned int years; // количество лет
     char position[POSLEN]; // должность
+    unsigned int fpos;   // позиция в файле
+    unsigned int flen;   // размер строки в файле
 };
 
 enum
@@ -39,6 +41,7 @@ class KursBDClass
     int getValue(unsigned int *var, char *val); // get_value для целочисленной переменной
     int getValue(char *var, char *val); // get_value для строковой переменной
     int clean_db(FILE *bd); // удаление старых данных
+    int del_from_db(FILE *bd, int size, int pos); // добавить в файл
     int add_to_bd(FILE *bd, char *string, int pos); // добавить в файл
     void valueInsert(char *string, char *value); // добавление значения в строку формата БД
     void stringInsert(char *string, struct table insert_value); // добавление строки в выводную строку формата БД
@@ -49,7 +52,8 @@ public:
     void select(char *s_file_name, char *field, unsigned int value); // выборка
     void select(char *s_file_name, char *field, char *value); // выборка
     void insert(struct table insert_value); // вставка
-    void del(char *query_string); // удаление
+    void del(char *field, unsigned int value); // выборка
+    void del(char *field, char *value); // выборка
     int merge(char *if_BD, char *of_BD); // слияние
 };
 

@@ -17,6 +17,7 @@ int KursBDClass::open(char *BD_file_name)
     bool end_nl = false;       // если false - в последней строке нету переноса, true - в последней строке есть перенос
     int str_num = 0;           // номер строки
     int buff_len = 0;          // запоминанете длиннай строки, на случай, если строка не коректа, но после неё следуют корректные
+ //   int pos = 0;               // позиция в файле
 
     // открываем файл
     bd_out_file = fmopen(BD_file_name, "r+", "KursBDClass::open");
@@ -31,6 +32,8 @@ int KursBDClass::open(char *BD_file_name)
         }
         else
         {
+            tb[table_length-1].fpos = counter;
+            tb[table_length-1].flen = buff_len + strlen(buff)+1;
             counter += buff_len + strlen(buff)+1;
             end_nl = buff[strlen(buff)-1] == '\n' ? true : false;
             buff_len = 0;
@@ -221,7 +224,7 @@ void KursBDClass::select(char *s_file_name, char *field, unsigned int value)
                     stringInsert(tmp, tb[i]);
     }
     else
-        fprintf(stderr, "Wrong field name %s\n\r", field);
+        fprintf(stderr, "Wrong field name %s\n", field);
 
     // убираем последний перенос строки
     tmp[strlen(tmp)-1] = '\0';
@@ -255,18 +258,18 @@ void KursBDClass::select(char *s_file_name, char *field, char *value)
     }
     else if (strcmp(field, "lname") == 0)
     {
-            for (i = 0; i < table_length; i++)
-                if (strmcmp(tb[i].lname, value) == 0)
-                    stringInsert(tmp, tb[i]);
+        for (i = 0; i < table_length; i++)
+            if (strmcmp(tb[i].lname, value) == 0)
+                stringInsert(tmp, tb[i]);
     }
     else if (strcmp(field, "position") == 0)
     {
-            for (i = 0; i < table_length; i++)
-                if (strmcmp(tb[i].position, value) == 0)
-                    stringInsert(tmp, tb[i]);
+        for (i = 0; i < table_length; i++)
+            if (strmcmp(tb[i].position, value) == 0)
+                stringInsert(tmp, tb[i]);
     }
     else
-        fprintf(stderr, "Wrong field name %s\n\r", field);
+        fprintf(stderr, "Wrong field name %s\n", field);
 
     // убираем последний перенос строки
     tmp[strlen(tmp)-1] = '\0';
@@ -302,9 +305,55 @@ int KursBDClass::add_to_bd(FILE *bd, char *string, int pos)
     return fmwrite(bd, string, strlen(string), pos);
 }
 
-void KursBDClass::del(char *query_string)
+void KursBDClass::del(char *field, unsigned int value)
 {
+    int i; // счетчик
 
+    if (strmcmp(field, "id") == 0)
+    {
+        for (i = table_length-1; i >= 0; i--)
+            if (tb[i].id == value)
+                del_from_db(bd_out_file, tb[i].flen, tb[i].fpos);
+    }
+    else if (strmcmp(field, "years") == 0)
+    {
+        for (i = table_length-1; i >= 0; i--)
+            if (tb[i].years == value)
+                del_from_db(bd_out_file, tb[i].flen, tb[i].fpos);
+    }
+    else
+        fprintf(stderr, "Wrong field name %s\n", field);
+}
+
+void KursBDClass::del(char *field, char *value)
+{
+    int i; // счетчик
+
+    if (strcmp(field, "fname") == 0)
+    {
+        for (i = table_length-1; i >= 0; i--)
+            if (strmcmp(tb[i].fname, value) == 0)
+                del_from_db(bd_out_file, tb[i].flen, tb[i].fpos);
+    }
+    else if (strcmp(field, "lname") == 0)
+    {
+        for (i = table_length-1; i >= 0; i--)
+            if (strmcmp(tb[i].lname, value) == 0)
+                del_from_db(bd_out_file, tb[i].flen, tb[i].fpos);
+    }
+    else if (strcmp(field, "position") == 0)
+    {
+        for (i = table_length-1; i >= 0; i--)
+            if (strmcmp(tb[i].position, value) == 0)
+                del_from_db(bd_out_file, tb[i].flen, tb[i].fpos);
+    }
+    else
+        fprintf(stderr, "Wrong field name %s\n", field);
+}
+
+int KursBDClass::del_from_db(FILE *bd, int size, int pos)
+{
+    return fmclean(bd, size, pos);
 }
 
 int KursBDClass::merge(char *if_BD, char *of_BD)
