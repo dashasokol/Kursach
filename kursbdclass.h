@@ -34,10 +34,10 @@ class KursBDClass
     struct table tb[TABLELINES]; // структура с данными
     unsigned int table_length; // количество записей в БД
     FILE *bd_out_file; // файл вывода
+    int counter; // количество символов в файле
     int parse(char *string_to_parse);  // разбиение строки
     int getValue(unsigned int *var, char *val); // get_value для целочисленной переменной
     int getValue(char *var, char *val); // get_value для строковой переменной
-//    int findId(unsigned int id); // поиск элемента
     int create(char *BD_file_name); // создание новой базы
     int add_to_bd(FILE *bd, char *string); // добавить в конец
     int add_to_bd(FILE *bd, char *string, char *field); // добавить в отсортированную БД
@@ -49,7 +49,7 @@ public:
     void close(); // закрытие базы
     void select(char *tmp, char *field, unsigned int value); // выборка
     void select(char *tmp, char *field, char *value); // выборка
-    void insert(char *string_to_add, struct table insert_value); // вставка
+    void insert(struct table insert_value); // вставка
     void del(char *query_string); // удаление
     int merge(char *if_BD, char *of_BD); // слияние
 };

@@ -166,17 +166,17 @@ int fmwrite(FILE * file, void * Data, int size, int from)
     unsigned int s;          // размер файла
     unsigned int nsize;      // размер итогового файла
     unsigned int alloc;      // требуемый размер буфера, значение меньшее, чем BSIZE или равное ему
-    int pose;       // текщая позиция
+    int pose;       // текщая позиция (при переносе) или итоговая
     unsigned int read;       // размер смещаемой информации
     char * temp;    // буфер, содержащий строку для смещения
-   
+
     /* переходим в конец файла */
     fseek(file, 0, SEEK_END);
-     
+
     /* определяем размер итогового файла */
     s = ftell(file);
     nsize = s + size;
-    
+
     /* переходим в место вставки */
     fseek(file, from, SEEK_SET);
 
@@ -184,6 +184,7 @@ int fmwrite(FILE * file, void * Data, int size, int from)
     alloc = BSIZE > s ? s-from : BSIZE;
     temp = (char*) malloc(alloc);
 	
+    memset(temp, '\0', alloc);
     pose = nsize;
     
     while (pose > from + size)
@@ -195,9 +196,13 @@ int fmwrite(FILE * file, void * Data, int size, int from)
         fseek(file,pose - size - read,SEEK_SET);
         fread((void*)temp,read,1,file);
 
+        int carr = colMatch(temp, (char *) "\n"); // подсчёт переносов, для вычисления переносов каретки
+        read -= carr;
+        temp[read] = '\0';
+
         /* вставляем данные из буфера в файл, начиная с символо от которого они должны идти */
-        fseek(file, pose - read, SEEK_SET);
-        fwrite((void*)temp, read, 1, file);
+        fseek(file, pose - (read + carr - 1), SEEK_SET);
+        fwrite((void*) temp, read, 1, file);
 		
         /* переходим на позицию, для следующего смещения */
         pose -= read;

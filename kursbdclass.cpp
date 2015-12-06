@@ -8,14 +8,20 @@
 KursBDClass::KursBDClass()
 {
     table_length = 0;
+    counter = 0;
 }
 
 int KursBDClass::open(char *BD_file_name)
 {
-    char buff[LINELEN]; // буфер
+    char buff[LINELEN];        // буфер
+    bool end_nl = false;       // если false - в последней строке нету переноса, true - в последней строке есть перенос
+    int str_num = 0;           // номер строки
+    int buff_len = 0;          // запоминанете длиннай строки, на случай, если строка не коректа, но после неё следуют корректные
 
+    // открываем файл
     bd_out_file = fopen(BD_file_name, "r+");
 
+    // если файл не открыт
     if (!bd_out_file)
     {
         // записываем ошибку в поток вывода отладочных сообщений
@@ -28,9 +34,20 @@ int KursBDClass::open(char *BD_file_name)
     {
         if (parse(buff) == END_WRONG_FORMAT)
         {
-            fprintf(stderr, "Line %d: Wrong string format\n\r", table_length + 1);
+            fprintf(stderr, "Line %d: Wrong string format\n\r", str_num);
+            buff_len += strlen(buff)+1;
         }
+        else
+        {
+            counter += buff_len + strlen(buff)+1;
+            end_nl = buff[strlen(buff)-1] == '\n' ? true : false;
+            buff_len = 0;
+        }
+
+        str_num++;
     }
+
+    counter -= end_nl ? 2 : 1;
 
     return END_OK;
 }
@@ -153,18 +170,6 @@ int KursBDClass::getValue(char *var, char *val)
     return pos;
 }
 
-//int KursBDClass::findId(unsigned int id)
-//{
-//    unsigned int i; // счетчик
-
-//    // botv id среди tb[i].id
-//    for (i = 0; i < table_length; i++)
-//        if (tb[i].id == id)
-//            return i;
-
-//    return END_NOT_FOUND;
-//}
-
 int KursBDClass::create(char *BD_file_name)
 {
 
@@ -196,7 +201,9 @@ void KursBDClass::stringInsert(char *string, struct table insert_value)
     valueInsert(string, number);
     number[0] = '\0';
 
-    valueInsert(string, insert_value.position);
+    strcat(string, (char *) STRING_END);
+    strcat(string, insert_value.position);
+    strcat(string, (char *) STRING_END);
 
     strcat(string, (char *) "\n");
 
@@ -211,13 +218,13 @@ void KursBDClass::select(char *tmp, char *field, unsigned int value)
 
     strcat(tmp, (char *) DESCRIPT);
 
-    if (strcmp(field, "id") == 0)
+    if (strmcmp(field, "id") == 0)
     {
         for (i = 0; i < table_length; i++)
             if (tb[i].id == value)
                 stringInsert(tmp, tb[i]);
     }
-    else if (strcmp(field, "years") == 0)
+    else if (strmcmp(field, "years") == 0)
     {
             for (i = 0; i < table_length; i++)
                 if (tb[i].years == value)
@@ -225,6 +232,9 @@ void KursBDClass::select(char *tmp, char *field, unsigned int value)
     }
     else
         fprintf(stderr, "Wrong field name %s\n\r", field);
+
+    // убираем последний перенос строки
+    tmp[strlen(tmp)-1] = '\0';
 }
 
 void KursBDClass::select(char *tmp, char *field, char *value)
@@ -239,29 +249,47 @@ void KursBDClass::select(char *tmp, char *field, char *value)
     if (strcmp(field, "fname") == 0)
     {
         for (i = 0; i < table_length; i++)
-            if (strcmp(tb[i].fname, value) == 0)
+            if (strmcmp(tb[i].fname, value) == 0)
                 stringInsert(tmp, tb[i]);
     }
     else if (strcmp(field, "lname") == 0)
     {
             for (i = 0; i < table_length; i++)
-                if (strcmp(tb[i].lname, value) == 0)
+                if (strmcmp(tb[i].lname, value) == 0)
                     stringInsert(tmp, tb[i]);
     }
     else if (strcmp(field, "position") == 0)
     {
             for (i = 0; i < table_length; i++)
-                if (strcmp(tb[i].position, value) == 0)
+                if (strmcmp(tb[i].position, value) == 0)
                     stringInsert(tmp, tb[i]);
     }
     else
         fprintf(stderr, "Wrong field name %s\n\r", field);
 
+    // убираем последний перенос строки
+    tmp[strlen(tmp)-1] = '\0';
+
 }
 
-void KursBDClass::insert(char *string_to_add, struct table insert_value)
+void KursBDClass::insert(struct table insert_value)
 {
-    stringInsert(string_to_add, insert_value);
+    char *tmp = (char *) malloc(LINELEN);
+
+    strcpy(tmp, "\n\0");
+
+    stringInsert(tmp, insert_value);
+
+    // убираем последний перенос строки
+    tmp[strlen(tmp) - 1] = '\0';
+
+    add_to_bd(bd_out_file, tmp);
+    free(tmp);
+}
+
+int KursBDClass::add_to_bd(FILE *bd, char *string)
+{
+    return fmwrite(bd, string, strlen(string), counter);
 }
 
 void KursBDClass::del(char *query_string)
