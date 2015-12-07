@@ -1,10 +1,12 @@
 #ifndef KURSBDCLASS_H
 #define KURSBDCLASS_H
 
+#include "helpfun.h"
+
 #define NAMELEN 50 // максимальная длинна имени и фамилии
 #define POSLEN 100 // максимальная длинна названия должности
-#define TABLELINES 100 // максимальное количество записей в таблице
-#define LINELEN 255 // максимальная длинна строки
+#define TABLELINES TLSIZE // максимальное количество записей в таблице
+#define LINELEN SSIZE // максимальная длинна строки
 #define SEPARATOR ";" // символ разделитель полей
 #define STRING_END "\"" // символ ограничитель строковых значений
 #define MAX_COLUMNS 5 // максимальное количество колонок в таблице
@@ -39,7 +41,7 @@ class KursBDClass
     unsigned int table_length; // количество записей в БД
     FILE *bd_out_file; // файл вывода
     unsigned int counter; // количество символов в файле
-    int parse(char *string_to_parse);  // разбиение строки
+    int parse(char *string_to_parse, struct table (*data_table)[TABLELINES], unsigned int *tb_len);  // разбиение строки
     int getValue(unsigned int *var, char *val); // get_value для целочисленной переменной
     int getValue(char *var, char *val); // get_value для строковой переменной
     int clean_db(FILE *bd); // удаление старых данных
@@ -47,6 +49,8 @@ class KursBDClass
     int add_to_bd(FILE *bd, char *string, int pos); // добавить в файл
     void valueInsert(char *string, char *value); // добавление значения в строку формата БД
     void stringInsert(char *string, struct table insert_value); // добавление строки в выводную строку формата БД
+    void sort_table(char *buff, char *field); // сортировка
+    int open_and_parse(char *BD_file_name, struct table (*data_table)[TABLELINES], unsigned int *tb_len, FILE *out_file, unsigned int *cnt);
 public:
     KursBDClass(); // инициализация
     int open(char *BD_file_name); // открытие базы
@@ -56,7 +60,8 @@ public:
     void insert(struct table insert_value); // вставка
     void del(char *field, unsigned int value); // выборка
     void del(char *field, char *value); // выборка
-    void sort(char *s_file_name, char *field); // сортировка
+    void sort(char *s_file_name, char *field); // сортировка и запись
+    void insert_sort(char *s_file_name, struct table insert_value); // добавление в отсортированную таблицу
 };
 
 #endif // KURSBDCLASS_H

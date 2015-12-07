@@ -7,11 +7,6 @@
 #define STRING_MAX_LINE 500                                            ///< максимальное число символов на строку
 #define REG_MAX_EX 50                                                  ///< максимальное количество элементов регулярного выражения
 
-
-#define NAME "_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"      ///< Символы из которых может состоять имя
-#define TYPE "[]_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"   ///< Символы из которых может состоять тип
-#define PATH "/_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"     ///< Символы из которых может состоять путь
-#define WORD "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"                 ///< Символы из которых может состоять слово
 #define NUMBER "0123456789"                                                            ///< Символы из которых может состоять число
 #define BSIZE 60000                                                                 ///< Максимальный размер временного буфера
 #define SSIZE 255

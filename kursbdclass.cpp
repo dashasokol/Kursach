@@ -1,14 +1,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <cstdlib>
-
 #include <string.h>
-
-
 #include <typeinfo>
 #include "helpfun.h"
 #include "kursbdclass.h"
-
 
 KursBDClass::KursBDClass()
 {
@@ -18,6 +14,11 @@ KursBDClass::KursBDClass()
 
 int KursBDClass::open(char *BD_file_name)
 {
+    return open_and_parse(BD_file_name, &tb, &table_length, bd_out_file, &counter);
+}
+
+int KursBDClass::open_and_parse(char *BD_file_name, struct table (*data_table)[TABLELINES], unsigned int *tb_len, FILE *out_file, unsigned int *cnt)
+{
     char buff[LINELEN];        // буфер
     bool end_nl = false;       // если false - в последней строке нету переноса, true - в последней строке есть перенос
     int str_num = 0;           // номер строки
@@ -25,21 +26,21 @@ int KursBDClass::open(char *BD_file_name)
     int end = 0;               // позиция в файле
 
     // открываем файл
-    bd_out_file = fmopen(BD_file_name, "r+", "KursBDClass::open");
+    out_file = fmopen(BD_file_name, "r+", "KursBDClass::open");
 
     // считываем данные в структуру
-    while(fgets(buff, LINELEN, bd_out_file))
+    while(fgets(buff, LINELEN, out_file))
     {
-        if ((end = parse(buff)) == END_WRONG_FORMAT)
+        if ((end = parse(buff, data_table, tb_len)) == END_WRONG_FORMAT)
         {
             fprintf(stderr, "Line %d: Wrong string format\n\r", str_num);
             buff_len += strlen(buff)+1;
         }
         else if (end == END_OK)
         {
-            tb[table_length-1].fpos = counter;
-            tb[table_length-1].flen = buff_len + strlen(buff) + 1;
-            counter += buff_len + strlen(buff)+1;
+            data_table[*tb_len-1]->fpos = *cnt;
+            data_table[*tb_len-1]->flen = buff_len + strlen(buff) + 1;
+            *cnt += buff_len + strlen(buff)+1;
             end_nl = buff[strlen(buff)-1] == '\n' ? true : false;
             buff_len = 0;
         }
@@ -47,7 +48,7 @@ int KursBDClass::open(char *BD_file_name)
         str_num++;
     }
 
-    counter -= end_nl ? 2 : 1;
+    *cnt -= end_nl ? 2 : 1;
 
     return END_OK;
 }
@@ -57,7 +58,7 @@ void KursBDClass::close()
     fclose(bd_out_file);
 }
 
-int KursBDClass::parse(char *string_to_parse)
+int KursBDClass::parse(char *string_to_parse, struct table (*data_table)[TABLELINES], unsigned int *tb_len)
 {
     int pos = 0;
 
@@ -68,34 +69,34 @@ int KursBDClass::parse(char *string_to_parse)
         return END_WRONG_FORMAT;
 
     // извлекаем идентификатор
-    if ((pos = getValue(&tb[table_length].id, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(&data_table[*tb_len]->id, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем имя
-    if ((pos = getValue(tb[table_length].fname, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(data_table[*tb_len]->fname, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем фамилию
-    if ((pos = getValue(tb[table_length].lname, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(data_table[*tb_len]->lname, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем количество лет
-    if ((pos = getValue(&tb[table_length].years, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(&data_table[*tb_len]->years, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем должность
-    if ((pos = getValue(tb[table_length].position, string_to_parse)) == END_WRONG_FORMAT)
+    if ((pos = getValue(data_table[*tb_len]->position, string_to_parse)) == END_WRONG_FORMAT)
         return pos;
 
-    table_length++;
+    (*tb_len)++;
 
     return END_OK;
 }
@@ -365,6 +366,22 @@ int KursBDClass::del_from_db(FILE *bd, int size, int pos)
 
 void KursBDClass::sort(char *s_file_name, char *field)
 {
+    char *tmp = (char *) malloc(LINELEN * TABLELINES);
+    sort_table(tmp, field);
+
+    // открываем файл для select
+    FILE *sel_file = fmopen(s_file_name, "r+", "KursBDClass::select");
+
+    // стираем старые данные
+    clean_db(sel_file);
+
+    // добавляем данные в файл
+    add_to_bd(sel_file, tmp, 0);
+    free(tmp);
+}
+
+void KursBDClass::sort_table(char *buff, char *field)
+{
     int order[table_length]; // массив, по которому определяется порядок
     int type;
     unsigned int i;
@@ -430,26 +447,31 @@ void KursBDClass::sort(char *s_file_name, char *field)
         return;
     }
 
-    char *tmp = (char *) malloc(LINELEN * TABLELINES);
-
     // обнуляем строку
-    tmp[0] = '\0';
+    buff[0] = '\0';
 
-    strcat(tmp, (char *) DESCRIPT);
+    strcat(buff, (char *) DESCRIPT);
 
     for (i = 0; i < table_length; i++)
-        stringInsert(tmp, tb[order[i]]);
+        stringInsert(buff, tb[order[i]]);
 
     // убираем последний перенос строки
-    tmp[strlen(tmp)-1] = '\0';
+    buff[strlen(buff)-1] = '\0';
+}
 
-    // открываем файл для select
-    FILE *sel_file = fmopen(s_file_name, "r+", "KursBDClass::select");
+void KursBDClass::insert_sort(char *s_file_name, struct table insert_value)
+{
+    char *tmp = (char *) malloc(LINELEN);
 
-    // стираем старые данные
-    clean_db(sel_file);
+    strcpy(tmp, "\n\0");
 
-    // добавляем данные в файл
-    add_to_bd(sel_file, tmp, 0);
+    stringInsert(tmp, insert_value);
+
+    // убираем последний перенос строки
+    tmp[strlen(tmp) - 1] = '\0';
+
+
+
+    add_to_bd(bd_out_file, tmp, counter);
     free(tmp);
 }

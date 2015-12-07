@@ -20,6 +20,24 @@ void get_ffile_name(char *fullname, char *name)
     strcat(fullname, name);
 }
 
+struct d
+{
+    char a[5];
+    int b;
+};
+
+void f2(char *s)
+{
+    strcpy(s, (char *) "str");
+}
+
+void f(struct d (*mstr)[2])
+{
+    f2(mstr[0]->a);
+}
+
+
+
 int main()
 {
     // создаём экземпляр класса
@@ -54,16 +72,11 @@ int main()
     mainBD.close();
 
 
+//    struct d var[2];
 
-//    char f[][5] = {{'g', 'a', '\0'}, {'u', 'g', 'a', '\0'}, {'z', 'a', 'g', 'a', '\0'}};
+//    f(&var);
 
-//    char **g;
-
-//    g = f;
-
-
-
-//    printf("%s\n", &g[0]);
+//    printf("%s\n", var[0].a);
 
     return 0;
 }
