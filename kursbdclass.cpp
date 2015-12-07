@@ -1,7 +1,10 @@
 #include <fcntl.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
+
 #include <string.h>
+
+
 #include <typeinfo>
 #include "helpfun.h"
 #include "kursbdclass.h"
@@ -19,7 +22,7 @@ int KursBDClass::open(char *BD_file_name)
     bool end_nl = false;       // если false - в последней строке нету переноса, true - в последней строке есть перенос
     int str_num = 0;           // номер строки
     int buff_len = 0;          // запоминанете длиннай строки, на случай, если строка не коректа, но после неё следуют корректные
- //   int pos = 0;               // позиция в файле
+    int end = 0;               // позиция в файле
 
     // открываем файл
     bd_out_file = fmopen(BD_file_name, "r+", "KursBDClass::open");
@@ -27,15 +30,15 @@ int KursBDClass::open(char *BD_file_name)
     // считываем данные в структуру
     while(fgets(buff, LINELEN, bd_out_file))
     {
-        if (parse(buff) == END_WRONG_FORMAT)
+        if ((end = parse(buff)) == END_WRONG_FORMAT)
         {
             fprintf(stderr, "Line %d: Wrong string format\n\r", str_num);
             buff_len += strlen(buff)+1;
         }
-        else
+        else if (end == END_OK)
         {
             tb[table_length-1].fpos = counter;
-            tb[table_length-1].flen = buff_len + strlen(buff)+1;
+            tb[table_length-1].flen = buff_len + strlen(buff) + 1;
             counter += buff_len + strlen(buff)+1;
             end_nl = buff[strlen(buff)-1] == '\n' ? true : false;
             buff_len = 0;
@@ -59,7 +62,7 @@ int KursBDClass::parse(char *string_to_parse)
     int pos = 0;
 
     if (string_to_parse[pos] == '#')
-        return END_OK;
+        return END_EXIT;
 
     if (colMatch(string_to_parse, (char *) SEPARATOR) < MAX_COLUMNS - 1)
         return END_WRONG_FORMAT;
@@ -185,14 +188,15 @@ void KursBDClass::stringInsert(char *string, struct table insert_value)
     // обнуляем строку
     number[0] = '\0';
 
-    itoa(insert_value.id, number, 10);
+    snprintf(number, LINELEN, "%d", insert_value.id);
+
     valueInsert(string, number);
     number[0] = '\0';
 
     valueInsert(string, insert_value.fname);
     valueInsert(string, insert_value.lname);
 
-    itoa(insert_value.years, number, 10);
+    snprintf(number, LINELEN, "%d", insert_value.years);
     valueInsert(string, number);
     number[0] = '\0';
 
@@ -363,10 +367,9 @@ void KursBDClass::sort(char *field)
     int order[table_length]; // массив, по которому определяется порядок
     int type;
     unsigned int i;
-    void *val;
 
     // заполняем массив
-    for (i = 1; i < table_length; i++)
+    for (i = 0; i < table_length; i++)
         order[i] = i;
 
     if (strmcmp(field, "id") == 0)
@@ -374,64 +377,60 @@ void KursBDClass::sort(char *field)
         int values[table_length];
 
         type = T_INT;
-        for (i = 1; i < table_length; i++)
+        for (i = 0; i < table_length; i++)
             values[i] = tb[i].id;
 
-        val = (void *) values;
+        qsort(order, values, 0, table_length-1);
     }
     else if (strmcmp(field, "years") == 0)
     {
         int values[table_length];
 
         type = T_INT;
-        for (i = 1; i < table_length; i++)
+        for (i = 0; i < table_length; i++)
             values[i] = tb[i].years;
 
-        val = (void *) values;
+        qsort(order, values, 0, table_length-1);
+
     }
+//    else if (strmcmp(field, "fname") == 0)
+//    {
+//        char values[table_length][LINELEN];
 
-    else if (strmcmp(field, "fname") == 0)
-    {
-        char *values[table_length];
+//        type = T_CHAR;
+//        for (i = 0; i < table_length; i++)
+//            strcpy(values[i], tb[i].fname);
 
-        type = T_CHAR;
-        for (i = 1; i < table_length; i++)
-            strcpy(values[i], tb[i].fname);
+//        val = (void *) values;
+//    }
+//    else if (strmcmp(field, "lname") == 0)
+//    {
+//        char values[table_length][LINELEN];
 
-        val = (void *) values;
-    }
-    else if (strmcmp(field, "lname") == 0)
-    {
-        char *values[table_length];
+//        type = T_CHAR;
+//        for (i = 0; i < table_length; i++)
+//            strcpy(values[i], tb[i].lname);
 
-        type = T_CHAR;
-        for (i = 1; i < table_length; i++)
-            strcpy(values[i], tb[i].lname);
+//        val = (void *) values;
+//    }
+//    else if (strmcmp(field, "position") == 0)
+//    {
+//        char values[table_length][LINELEN];
 
-        val = (void *) values;
-    }
-    else if (strmcmp(field, "position") == 0)
-    {
-        char *values[table_length];
+//        type = T_CHAR;
+//        for (i = 0; i < table_length; i++)
+//            strcpy(values[i], tb[i].position);
 
-        type = T_CHAR;
-        for (i = 1; i < table_length; i++)
-            strcpy(values[i], tb[i].position);
-
-        val = (void *) values;
-    }
-    else
-    {
-        fprintf(stderr, "Wrong field name %s\n", field);
-        return;
-    }
-
-    qsort(order, val, table_length-1, 0, table_length-1, type);
-}
-
-int KursBDClass::merge(char *if_BD, char *of_BD)
-{
+//        val = (void *) values;
+//    }
+//    else
+//    {
+//        fprintf(stderr, "Wrong field name %s\n", field);
+//        return;
+//    }
 
 
-    return 0;
+    for (i = 0; i < table_length; i++)
+        printf("%d\n", tb[order[i]].years);
+
 }

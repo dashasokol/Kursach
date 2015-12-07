@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define DBPATH "C:\\Users\\Skyline\\Documents\\build-Kursach-Desktop_Qt_5_5_0_MinGW_32bit-Debug\\debug\\"
+#define DBPATH "/home/skyline/workspace/Kursach/build-Kursach-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/"
 #define MAINDBNAME "KurBD"
 #define SECONDDBNAME "ScnBD"
 #define SELECTBDNAME "SelectBD"
@@ -48,10 +48,26 @@ int main()
     // открываем базу данных
     mainBD.open(mpath);
 
-    mainBD.sort("fname");
+    mainBD.sort((char *) "years");
 
     // закрываем файл базы данных
     mainBD.close();
+
+
+//    void *m;
+
+//    char f[][5] = {{'g', 'a', '\0'}, {'u', 'g', 'a', '\0'}, {'z', 'a', 'g', 'a', '\0'}};
+
+//    char **g;
+
+//    m = (void *) f;
+
+//    g = (char **) m;
+
+
+
+//    printf("%s\n", &g[0]);
+
     return 0;
 }
 

@@ -134,7 +134,12 @@ int fileExist(char *file);
 
 FILE *fmopen(char *file, const char *flag, const char *errstr);
 
-void qsort(int *v, void *mas, int maslen, unsigned int left, unsigned int right, int type);
+void qsort(int *v, int *mas, int left, int right);
+
+void qsort(int *v, char **mas, unsigned int maslen, int left, int right);
+
+void qsort(int *v, void *mas, unsigned int maslen, int left, int right, int type);
+
 void swap(int *mas, int var1, int var2);
 
 #endif /* CONF_H_ */

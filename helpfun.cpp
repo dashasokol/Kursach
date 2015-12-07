@@ -318,43 +318,71 @@ FILE *fmopen(char *file, const char *flag, const char *errstr)
     return temp;
 }
 
-void qsort(int *v, void *mas, int maslen, unsigned int left, unsigned int right, int type)
+void qsort(int *v, int *mas, int left, int right)
 {
-    unsigned int i = 0;  // счетчик
-    unsigned int last = 0; // последний элемент
+    int i = 0;  // счетчик
+    int last = 0; // последний элемент
+
+    if (left >= right)
+        return;
 
     swap(v, left, (left + right)/2);
     last = left;
 
-    if (type == T_INT)
-     {
-        int *m;
-        m = (int *) mas;
+    for (i = left+1; i <= right; i++)
+        if (mas[v[i]] < mas[v[left]])
+            swap(v, ++last, i);
 
-        for (i = left+1; i <= right; i++)
-        {
-            if (m[i] < m[left])
-                swap(v, ++last, i);
-        }
+    swap(v, left, last);
+    qsort(v, mas, left, last-1);
+    qsort(v, mas, last+1, right);
+}
+
+void qsort(int *v, char **mas, int maslen, int left, int right)
+{
+    int i = 0;  // счетчик
+    int last = 0; // последний элемент
+
+    swap(v, left, (left + right)/2);
+    last = left;
+
+  //  m = (char **) mas;
+
+    for (i = left+1; i <= right; i++)
+    {
+
+        char * var1;
+        char * var2;
+
+        char **m;
+
+        m = mas;
+
+        var1 = &m[v[i]][0];
+        var2 = &m[v[left]][0];
+
+        if (strmcmp(var1, var2) == -1)
+            swap(v, ++last, i);
+    }
+
+    swap(v, left, last);
+    qsort(v, mas, maslen, left, last-1);
+    qsort(v, mas, maslen, last+1, right);
+}
+
+void qsort(int *v, void *mas, int maslen, int left, int right, int type)
+{
+    if (type == T_INT)
+    {
+//TODO
     }
     else if (type == T_CHAR)
     {
-        char **m;
-        m = (char **) mas;
-
-        for (i = left+1; i <= right; i++)
-        {
-            if (strmcmp(m[i], m[left]) == -1)
-                swap(v, ++last, i);
-        }
+//TODO
     }
     else
         fprintf(stderr, "Wrong variable type\n");
         return;
-
-    swap(v, left, last);
-    qsort(v, mas, maslen, left, last-1, type);
-    qsort(v, mas, maslen, last+1, right, type);
 }
 
 void swap(int *mas, int var1, int var2)

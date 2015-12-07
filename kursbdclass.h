@@ -25,8 +25,9 @@ struct table
 enum
 {
     END_WRONG_FORMAT = -2, // неверный формат
-    END_NOT_FOUND = -1,   // поиск завершился неудачей
-    END_OK = 0,           // функция завершилась без ошибки
+    END_NOT_FOUND,   // поиск завершился неудачей
+    END_OK,           // функция завершилась без ошибки
+    END_EXIT,           // функция завершилась, обработка не треубется
 };
 
 /*
@@ -37,7 +38,7 @@ class KursBDClass
     struct table tb[TABLELINES]; // структура с данными
     unsigned int table_length; // количество записей в БД
     FILE *bd_out_file; // файл вывода
-    int counter; // количество символов в файле
+    unsigned int counter; // количество символов в файле
     int parse(char *string_to_parse);  // разбиение строки
     int getValue(unsigned int *var, char *val); // get_value для целочисленной переменной
     int getValue(char *var, char *val); // get_value для строковой переменной
@@ -56,7 +57,6 @@ public:
     void del(char *field, unsigned int value); // выборка
     void del(char *field, char *value); // выборка
     void sort(char *field); // сортировка
-    int merge(char *if_BD, char *of_BD); // слияние
 };
 
 #endif // KURSBDCLASS_H
