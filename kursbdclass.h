@@ -56,7 +56,7 @@ public:
     void insert(struct table insert_value); // вставка
     void del(char *field, unsigned int value); // выборка
     void del(char *field, char *value); // выборка
-    void sort(char *field); // сортировка
+    void sort(char *s_file_name, char *field); // сортировка
 };
 
 #endif // KURSBDCLASS_H

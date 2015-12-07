@@ -148,7 +148,7 @@ int KursBDClass::getValue(char *var, char *val)
         pos = indexOf(val, (char *) SEPARATOR, LEFT);
 
     // если найдено пустое значение
-    if (pos == 0)
+    if (pos <= 0)
     {
         var[pos] = '\0';
         return END_OK;
@@ -177,6 +177,7 @@ int KursBDClass::clean_db(FILE *bd)
 
 void KursBDClass::valueInsert(char *string, char *value)
 {
+    if (strlen(value) > 0)
     strcat(string, value);
     strcat(string, (char *) SEPARATOR);
 }
@@ -362,7 +363,7 @@ int KursBDClass::del_from_db(FILE *bd, int size, int pos)
     return fmclean(bd, size, pos);
 }
 
-void KursBDClass::sort(char *field)
+void KursBDClass::sort(char *s_file_name, char *field)
 {
     int order[table_length]; // массив, по которому определяется порядок
     int type;
@@ -380,7 +381,7 @@ void KursBDClass::sort(char *field)
         for (i = 0; i < table_length; i++)
             values[i] = tb[i].id;
 
-        qsort(order, values, 0, table_length-1);
+        qsort_dmas(order, values, 0, table_length-1);
     }
     else if (strmcmp(field, "years") == 0)
     {
@@ -390,47 +391,65 @@ void KursBDClass::sort(char *field)
         for (i = 0; i < table_length; i++)
             values[i] = tb[i].years;
 
-        qsort(order, values, 0, table_length-1);
+        qsort_dmas(order, values, 0, table_length-1);
 
     }
-//    else if (strmcmp(field, "fname") == 0)
-//    {
-//        char values[table_length][LINELEN];
+    else if (strmcmp(field, "fname") == 0)
+    {
+        char values[LINELEN][TABLELINES];
 
-//        type = T_CHAR;
-//        for (i = 0; i < table_length; i++)
-//            strcpy(values[i], tb[i].fname);
+        type = T_CHAR;
+        for (i = 0; i < table_length; i++)
+            strcpy(values[i], tb[i].fname);
 
-//        val = (void *) values;
-//    }
-//    else if (strmcmp(field, "lname") == 0)
-//    {
-//        char values[table_length][LINELEN];
+        qsort_dmas(order, values, 0, table_length-1);
+    }
+    else if (strmcmp(field, "lname") == 0)
+    {
+        char values[LINELEN][TABLELINES];
 
-//        type = T_CHAR;
-//        for (i = 0; i < table_length; i++)
-//            strcpy(values[i], tb[i].lname);
+        type = T_CHAR;
+        for (i = 0; i < table_length; i++)
+            strcpy(values[i], tb[i].lname);
 
-//        val = (void *) values;
-//    }
-//    else if (strmcmp(field, "position") == 0)
-//    {
-//        char values[table_length][LINELEN];
+        qsort_dmas(order, values, 0, table_length-1);
+    }
+    else if (strmcmp(field, "position") == 0)
+    {
+        char values[LINELEN][TABLELINES];
 
-//        type = T_CHAR;
-//        for (i = 0; i < table_length; i++)
-//            strcpy(values[i], tb[i].position);
+        type = T_CHAR;
+        for (i = 0; i < table_length; i++)
+            strcpy(values[i], tb[i].position);
 
-//        val = (void *) values;
-//    }
-//    else
-//    {
-//        fprintf(stderr, "Wrong field name %s\n", field);
-//        return;
-//    }
+        qsort_dmas(order, values, 0, table_length-1);
+    }
+    else
+    {
+        fprintf(stderr, "Wrong field name %s\n", field);
+        return;
+    }
 
+    char *tmp = (char *) malloc(LINELEN * TABLELINES);
+
+    // обнуляем строку
+    tmp[0] = '\0';
+
+    strcat(tmp, (char *) DESCRIPT);
 
     for (i = 0; i < table_length; i++)
-        printf("%d\n", tb[order[i]].years);
+        stringInsert(tmp, tb[order[i]]);
 
+    // убираем последний перенос строки
+    tmp[strlen(tmp)-1] = '\0';
+
+    // открываем файл для select
+    FILE *sel_file = fmopen(s_file_name, "r+", "KursBDClass::select");
+
+    // стираем старые данные
+    clean_db(sel_file);
+
+    // добавляем данные в файл
+    add_to_bd(sel_file, tmp, 0);
+    free(tmp);
 }

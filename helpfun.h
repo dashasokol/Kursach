@@ -15,6 +15,7 @@
 #define NUMBER "0123456789"                                                            ///< Символы из которых может состоять число
 #define BSIZE 60000                                                                 ///< Максимальный размер временного буфера
 #define SSIZE 255
+#define TLSIZE 100
 
 /**
  * @enum Вектора действий со строкой
@@ -134,11 +135,11 @@ int fileExist(char *file);
 
 FILE *fmopen(char *file, const char *flag, const char *errstr);
 
-void qsort(int *v, int *mas, int left, int right);
+void qsort_dmas(int *v, int *mas, int left, int right);
 
-void qsort(int *v, char **mas, unsigned int maslen, int left, int right);
+void qsort_dmas(int *v, char (*mas)[TLSIZE], int left, int right);
 
-void qsort(int *v, void *mas, unsigned int maslen, int left, int right, int type);
+void qsort_dmas(int *v, void *mas, unsigned int maslen, int left, int right, int type);
 
 void swap(int *mas, int var1, int var2);
 

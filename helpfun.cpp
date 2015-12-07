@@ -318,7 +318,7 @@ FILE *fmopen(char *file, const char *flag, const char *errstr)
     return temp;
 }
 
-void qsort(int *v, int *mas, int left, int right)
+void qsort_dmas(int *v, int *mas, int left, int right)
 {
     int i = 0;  // счетчик
     int last = 0; // последний элемент
@@ -334,43 +334,33 @@ void qsort(int *v, int *mas, int left, int right)
             swap(v, ++last, i);
 
     swap(v, left, last);
-    qsort(v, mas, left, last-1);
-    qsort(v, mas, last+1, right);
+    qsort_dmas(v, mas, left, last-1);
+    qsort_dmas(v, mas, last+1, right);
 }
 
-void qsort(int *v, char **mas, int maslen, int left, int right)
+void qsort_dmas(int *v, char (*mas)[TLSIZE], int left, int right)
 {
     int i = 0;  // счетчик
     int last = 0; // последний элемент
 
+    if (left >= right)
+        return;
+
     swap(v, left, (left + right)/2);
     last = left;
 
-  //  m = (char **) mas;
-
     for (i = left+1; i <= right; i++)
     {
-
-        char * var1;
-        char * var2;
-
-        char **m;
-
-        m = mas;
-
-        var1 = &m[v[i]][0];
-        var2 = &m[v[left]][0];
-
-        if (strmcmp(var1, var2) == -1)
+        if (strmcmp(mas[v[i]], mas[v[left]]) == -1)
             swap(v, ++last, i);
     }
 
     swap(v, left, last);
-    qsort(v, mas, maslen, left, last-1);
-    qsort(v, mas, maslen, last+1, right);
+    qsort_dmas(v, mas, left, last-1);
+    qsort_dmas(v, mas, last+1, right);
 }
 
-void qsort(int *v, void *mas, int maslen, int left, int right, int type)
+void qsort_dmas(int *v, void *mas, int maslen, int left, int right, int type)
 {
     if (type == T_INT)
     {
