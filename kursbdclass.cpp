@@ -56,7 +56,6 @@ void KursBDClass::close()
 {
     unsigned int i = 0;
 
-
     fclose(bd_out_file);
 
     for (i = 0; i < table_length; i++)
@@ -401,6 +400,8 @@ int KursBDClass::del_from_db(FILE *bd, int size, int pos)
 
 int KursBDClass::sort(char *field)
 {
+    order_clear(table_length);
+
     int ret = sort_table(order, field, tb, table_length);
 
     order_len = table_length;
@@ -413,10 +414,6 @@ int KursBDClass::sort_table(int *ord, char *field, struct table *data_table, uns
 {
     int type;
     unsigned int i;
-
-    // заполняем массив
-    for (i = 0; i < tb_len; i++)
-        ord[i] = i;
 
     if (strmcmp(field, "id") == 0)
     {
@@ -488,14 +485,14 @@ void KursBDClass::insert_sort(struct table insert_value, char *field)
 
 void KursBDClass::insert_and_sort(struct table *insert_value, unsigned int insert_value_len, char *field)
 {
-    struct table sorted[TABLELINES];
-    unsigned int tb_len = 0;
     unsigned int i;
 
     for (i = 0; i < insert_value_len; i++)
-        sorted[tb_len++] = insert_value[i];
+        tb[table_length++] = insert_value[i];
 
-    sort_table(order, field, sorted, tb_len);
+    order_clear(table_length);
+
+    sort_table(order, field, tb, table_length);
     get_order_string();
 }
 

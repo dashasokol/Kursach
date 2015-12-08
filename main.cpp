@@ -106,11 +106,11 @@ int main()
 
 
     // соединяем БД
-//    openBD(&sortBD, sopath);
-//    printf("Merges on the field: \"%s\"\n\n", sort_field);
-//    sortBD.merge(so2path, sort_field);
-//    sortBD.write_buffer();
-//    sortBD.close();
+    openBD(&sortBD, sopath);
+    printf("Merges on the field: \"%s\"\n\n", sort_field);
+    sortBD.merge(so2path, sort_field);
+    sortBD.write_buffer();
+    sortBD.close();
 
 
 
