@@ -30,6 +30,8 @@ enum
     END_NOT_FOUND,   // поиск завершился неудачей
     END_OK,           // функция завершилась без ошибки
     END_EXIT,           // функция завершилась, обработка не треубется
+    END_OPEN_FAIL,    // проблема с открытием файла
+
 };
 
 /*
@@ -49,8 +51,9 @@ class KursBDClass
     int add_to_bd(FILE *bd, char *string, int pos); // добавить в файл
     void valueInsert(char *string, char *value); // добавление значения в строку формата БД
     void stringInsert(char *string, struct table insert_value); // добавление строки в выводную строку формата БД
-    void sort_table(char *buff, char *field); // сортировка
-    int open_and_parse(char *BD_file_name, struct table *data_table, unsigned int *tb_len, FILE *out_file, unsigned int *cnt);
+    int sort_table(char *buff, char *field, struct table *data_table, unsigned int tb_len); // сортировка
+    FILE *open_and_parse(char *BD_file_name, struct table *data_table, unsigned int *tb_len);
+    void insert_and_sort(char *s_file_name, struct table *insert_value, unsigned int insert_value_len, char *field); //вставка значений в таблицу и сортировка
 public:
     KursBDClass(); // инициализация
     int open(char *BD_file_name); // открытие базы
@@ -60,8 +63,9 @@ public:
     void insert(struct table insert_value); // вставка
     void del(char *field, unsigned int value); // выборка
     void del(char *field, char *value); // выборка
-    void sort(char *s_file_name, char *field); // сортировка и запись
-    void insert_sort(char *s_file_name, struct table insert_value); // добавление в отсортированную таблицу
+    int sort(char *s_file_name, char *field); // сортировка и запись
+    void insert_sort(char *s_file_name, struct table insert_value, char *field); // добавление значения в отсортированную таблицу
+    void merge(char *if_DB, char *of_BD, char *field);
 };
 
 #endif // KURSBDCLASS_H

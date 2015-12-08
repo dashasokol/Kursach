@@ -54,29 +54,14 @@ int main()
     get_ffile_name(sopath, (char *) SORTBDNAME);
     get_ffile_name(so2path, (char *) SORTSCNBDNAME);
 
-    // указатель на резулдьтирующую строку
-//    struct table ins_d;
-//
-//    ins_d.id = 15;
-//    strcpy(ins_d.fname, (char *) "Nickita");
-//    strcpy(ins_d.lname, (char *) "Levin");
-//    ins_d.years = 59;
-//    strcpy(ins_d.position, (char *) "CT");
-
     // открываем базу данных
     mainBD.open(mpath);
 
-    mainBD.sort(sopath, (char *) "fname");
+    mainBD.del((char *) "years", 30);
 
     // закрываем файл базы данных
     mainBD.close();
 
-
-//    struct d var[2];
-
-//    f(&var);
-
-//    printf("%s\n", var[0].a);
 
     return 0;
 }
