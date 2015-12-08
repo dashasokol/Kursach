@@ -20,8 +20,6 @@ struct table
     char lname[NAMELEN]; // фамилия
     unsigned int years; // количество лет
     char position[POSLEN]; // должность
-    unsigned int fpos;   // позиция в файле
-    unsigned int flen;   // размер строки в файле
 };
 
 enum
@@ -40,6 +38,9 @@ enum
 class KursBDClass
 {
     struct table tb[TABLELINES]; // структура с данными
+    char string_for_write[LINELEN * TABLELINES];
+    unsigned int order_len;
+    int order[TABLELINES]; // массив, по которому определяется порядок
     unsigned int table_length; // количество записей в БД
     FILE *bd_out_file; // файл вывода
     unsigned int counter; // количество символов в файле
@@ -51,21 +52,25 @@ class KursBDClass
     int add_to_bd(FILE *bd, char *string, int pos); // добавить в файл
     void valueInsert(char *string, char *value); // добавление значения в строку формата БД
     void stringInsert(char *string, struct table insert_value); // добавление строки в выводную строку формата БД
-    int sort_table(char *buff, char *field, struct table *data_table, unsigned int tb_len); // сортировка
+    int sort_table(int *ord, char *field, struct table *data_table, unsigned int tb_len); // сортировка
     FILE *open_and_parse(char *BD_file_name, struct table *data_table, unsigned int *tb_len);
-    void insert_and_sort(char *s_file_name, struct table *insert_value, unsigned int insert_value_len, char *field); //вставка значений в таблицу и сортировка
+    void insert_and_sort(struct table *insert_value, unsigned int insert_value_len, char *field); //вставка значений в таблицу и сортировка
+    void get_order_string(); // получение строки вывода
+    void order_clear(unsigned int length); // сброс порядка
 public:
     KursBDClass(); // инициализация
     int open(char *BD_file_name); // открытие базы
     void close(); // закрытие базы
-    void select(char *s_file_name, char *field, unsigned int value); // выборка
-    void select(char *s_file_name, char *field, char *value); // выборка
+    void select(char *field, unsigned int value); // выборка
+    void select(char *field, char *value); // выборка
     void insert(struct table insert_value); // вставка
     void del(char *field, unsigned int value); // выборка
     void del(char *field, char *value); // выборка
-    int sort(char *s_file_name, char *field); // сортировка и запись
-    void insert_sort(char *s_file_name, struct table insert_value, char *field); // добавление значения в отсортированную таблицу
-    void merge(char *if_DB, char *of_BD, char *field);
+    int sort(char *field); // сортировка и запись
+    void insert_sort(struct table insert_value, char *field); // добавление значения в отсортированную таблицу
+    void merge(char *if_DB, char *field);
+    int write_buffer(char *s_file_name);
+    int write_buffer();
 };
 
 #endif // KURSBDCLASS_H

@@ -310,6 +310,8 @@ FILE *fmopen(char *file, const char *flag, const char *errstr)
 {
     FILE *temp = fopen(file, flag);
 
+    setvbuf(temp, NULL, _IONBF, 0);
+
     // если файл не открыт
     if (!temp)
         // записываем ошибку в поток вывода отладочных сообщений
