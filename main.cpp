@@ -110,50 +110,51 @@ int main()
     printf("Merges on the field: \"%s\"\n\n", sort_field);
     sortBD.merge(so2path, sort_field);
     sortBD.write_buffer();
+    printf("Result in file: %s\n\n\n", sopath);
     sortBD.close();
 
 
 
-
-//    openBD(&selectBD, selpath);
+    printf("\n\n\n\nExercise 2:\n\n\n");
+    openBD(&selectBD, mpath);
 //    openBD(&sort2DB, so2path);
 
-//    char *selyear = (char *) "years";
-//    char *selfname = (char *) "fnames";
-//    char *selpos = (char *) "position";
-//    int year = 30;
-//    char *fname = (char *) "Maria";
-//    char *pos = (char *) "Admin";
+    char *selyear = (char *) "years";
+    char *selfname = (char *) "fnames";
+    char *selpos = (char *) "position";
+    int year = 30;
+    char *fname = (char *) "Maria";
+    char *pos = (char *) "Admin";
 
-//    // Выполняем первую выборку
-//    printf("Делаем выборку по полю \"%s\" со значением %d\n\"", selyear, year);
-//    mainBD.select(selyear, year);
-//    mainBD.write_buffer(selpath);
+    // Выполняем первую выборку
+    printf("Делаем выборку по полю \"%s\" со значением %d\n\"", selyear, year);
+    selectBD.select(selyear, year);
+    selectBD.write_buffer(selpath);
 
-//    // закрываем файл базы данных
-//    mainBD.close();
+    // закрываем файл базы данных
+    selectBD.close();
 
 
-//    openBD(&selectBD, selpath);
+    openBD(&selectBD, selpath);
 
-//    // Выполняем выборку
-//    printf("Делаем выборку по полю \"%s\" со значением %s\n\"", selfname, fname);
-//    selectBD.select(selfname, fname);
-//    selectBD.write_buffer();
+    // Выполняем выборку
+    printf("Делаем выборку по полю \"%s\" со значением %s\n\"", selfname, fname);
+    selectBD.select(selfname, fname);
+    selectBD.write_buffer();
 
-//    selectBD.close();
+    selectBD.close();
 
-//    openBD(&selectBD, selpath);
-//    // Выполняем выборку
-//    printf("Делаем выборку по полю \"%s\" со значением %s\n\"", selpos, pos);
-//    selectBD.select(selpos, pos);
-//    selectBD.write_buffer();
+    openBD(&selectBD, selpath);
+    // Выполняем выборку
+    printf("Делаем выборку по полю \"%s\" со значением %s\n\"", selpos, pos);
+    selectBD.select(selpos, pos);
+    selectBD.write_buffer();
 
-//    printf("Результат операции записан в файл %s\n\n", selpath);
+    printf("Результат операции записан в файл %s\n\n", selpath);
 
-//    // закрываем файл базы данных
-//    selectBD.close();
-//    printf("База данных закрыта\n\n\n");
+    // закрываем файл базы данных
+    selectBD.close();
+    printf("База данных закрыта\n\n\n");
 
     return 0;
 }
