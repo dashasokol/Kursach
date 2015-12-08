@@ -41,7 +41,7 @@ class KursBDClass
     unsigned int table_length; // количество записей в БД
     FILE *bd_out_file; // файл вывода
     unsigned int counter; // количество символов в файле
-    int parse(char *string_to_parse, struct table (*data_table)[TABLELINES], unsigned int *tb_len);  // разбиение строки
+    int parse(char *string_to_parse, struct table *data_table, unsigned int *tb_len);  // разбиение строки
     int getValue(unsigned int *var, char *val); // get_value для целочисленной переменной
     int getValue(char *var, char *val); // get_value для строковой переменной
     int clean_db(FILE *bd); // удаление старых данных
@@ -50,7 +50,7 @@ class KursBDClass
     void valueInsert(char *string, char *value); // добавление значения в строку формата БД
     void stringInsert(char *string, struct table insert_value); // добавление строки в выводную строку формата БД
     void sort_table(char *buff, char *field); // сортировка
-    int open_and_parse(char *BD_file_name, struct table (*data_table)[TABLELINES], unsigned int *tb_len, FILE *out_file, unsigned int *cnt);
+    int open_and_parse(char *BD_file_name, struct table *data_table, unsigned int *tb_len, FILE *out_file, unsigned int *cnt);
 public:
     KursBDClass(); // инициализация
     int open(char *BD_file_name); // открытие базы

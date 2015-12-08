@@ -351,7 +351,7 @@ void qsort_dmas(int *v, char (*mas)[TLSIZE], int left, int right)
 
     for (i = left+1; i <= right; i++)
     {
-        if (strmcmp(mas[v[i]], mas[v[left]]) == -1)
+        if (strmcmp(mas[v[i]], mas[v[left]]) < 0)
             swap(v, ++last, i);
     }
 

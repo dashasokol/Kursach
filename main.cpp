@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define DBPATH "C:\\Users\\Skyline\\Documents\\build-Kursach-Desktop_Qt_5_5_0_MinGW_32bit-Debug\\debug\\"
+#define DBPATH "/home/skyline/workspace/Kursach/build/"
 #define MAINDBNAME "KurBD"
 #define SECONDDBNAME "ScnBD"
 #define SELECTBDNAME "SelectBD"
@@ -66,7 +66,7 @@ int main()
     // открываем базу данных
     mainBD.open(mpath);
 
-    mainBD.sort(sopath, (char *) "position");
+    mainBD.sort(sopath, (char *) "fname");
 
     // закрываем файл базы данных
     mainBD.close();

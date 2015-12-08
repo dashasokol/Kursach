@@ -14,10 +14,10 @@ KursBDClass::KursBDClass()
 
 int KursBDClass::open(char *BD_file_name)
 {
-    return open_and_parse(BD_file_name, &tb, &table_length, bd_out_file, &counter);
+    return open_and_parse(BD_file_name, tb, &table_length, bd_out_file, &counter);
 }
 
-int KursBDClass::open_and_parse(char *BD_file_name, struct table (*data_table)[TABLELINES], unsigned int *tb_len, FILE *out_file, unsigned int *cnt)
+int KursBDClass::open_and_parse(char *BD_file_name, struct table *data_table, unsigned int *tb_len, FILE *out_file, unsigned int *cnt)
 {
     char buff[LINELEN];        // буфер
     bool end_nl = false;       // если false - в последней строке нету переноса, true - в последней строке есть перенос
@@ -26,10 +26,10 @@ int KursBDClass::open_and_parse(char *BD_file_name, struct table (*data_table)[T
     int end = 0;               // позиция в файле
 
     // открываем файл
-    out_file = fmopen(BD_file_name, "r+", "KursBDClass::open");
+    bd_out_file = fmopen(BD_file_name, "r+", "KursBDClass::open");
 
     // считываем данные в структуру
-    while(fgets(buff, LINELEN, out_file))
+    while(fgets(buff, LINELEN, bd_out_file))
     {
         if ((end = parse(buff, data_table, tb_len)) == END_WRONG_FORMAT)
         {
@@ -38,8 +38,8 @@ int KursBDClass::open_and_parse(char *BD_file_name, struct table (*data_table)[T
         }
         else if (end == END_OK)
         {
-            data_table[*tb_len-1]->fpos = *cnt;
-            data_table[*tb_len-1]->flen = buff_len + strlen(buff) + 1;
+            data_table[*tb_len-1].fpos = *cnt;
+            data_table[*tb_len-1].flen = buff_len + strlen(buff) + 1;
             *cnt += buff_len + strlen(buff)+1;
             end_nl = buff[strlen(buff)-1] == '\n' ? true : false;
             buff_len = 0;
@@ -58,7 +58,7 @@ void KursBDClass::close()
     fclose(bd_out_file);
 }
 
-int KursBDClass::parse(char *string_to_parse, struct table (*data_table)[TABLELINES], unsigned int *tb_len)
+int KursBDClass::parse(char *string_to_parse, struct table *data_table, unsigned int *tb_len)
 {
     int pos = 0;
 
@@ -69,31 +69,31 @@ int KursBDClass::parse(char *string_to_parse, struct table (*data_table)[TABLELI
         return END_WRONG_FORMAT;
 
     // извлекаем идентификатор
-    if ((pos = getValue(&data_table[*tb_len]->id, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(&data_table[*tb_len].id, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем имя
-    if ((pos = getValue(data_table[*tb_len]->fname, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(data_table[*tb_len].fname, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем фамилию
-    if ((pos = getValue(data_table[*tb_len]->lname, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(data_table[*tb_len].lname, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем количество лет
-    if ((pos = getValue(&data_table[*tb_len]->years, string_to_parse)) != END_WRONG_FORMAT)
+    if ((pos = getValue(&data_table[*tb_len].years, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
     // извлекаем должность
-    if ((pos = getValue(data_table[*tb_len]->position, string_to_parse)) == END_WRONG_FORMAT)
+    if ((pos = getValue(data_table[*tb_len].position, string_to_parse)) == END_WRONG_FORMAT)
         return pos;
 
     (*tb_len)++;
