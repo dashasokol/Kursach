@@ -28,7 +28,7 @@ FILE *KursBDClass::open_and_parse(char *BD_file_name, struct table *data_table, 
     int str_num = 0;           // номер строки
     int buff_len = 0;          // запоминанете длиннай строки, на случай, если строка не коректа, но после неё следуют корректные
     int end = 0;               // позиция в файле
-    FILE *out_file;            // ltcrhbgnjh afqkf
+    FILE *out_file;            // дескриптор файла
 
 
     // открываем файл

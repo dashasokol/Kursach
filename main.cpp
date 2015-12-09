@@ -14,27 +14,13 @@ using namespace std;
 #define FILENAMELEN 255
 
 void get_ffile_name(char *fullname, char *name);
+int openBD(KursBDClass *BDclass, char *path);
+int sort(KursBDClass *BDclass, char *field);
 
 void get_ffile_name(char *fullname, char *name)
 {
     strcpy(fullname, (char *) DBPATH);
     strcat(fullname, name);
-}
-
-struct d
-{
-    char a[5];
-    int b;
-};
-
-void f2(char *s)
-{
-    strcpy(s, (char *) "str");
-}
-
-void f(struct d (*mstr)[2])
-{
-    f2(mstr[0]->a);
 }
 
 int openBD(KursBDClass *BDclass, char *path)
@@ -115,9 +101,9 @@ int main()
 
 
 
-    printf("\n\n\n\nExercise 2:\n\n\n");
+    printf("\nExercise 2:\n\n\n");
+
     openBD(&selectBD, mpath);
-//    openBD(&sort2DB, so2path);
 
     char *selyear = (char *) "years";
     char *selfname = (char *) "fnames";
@@ -127,7 +113,7 @@ int main()
     char *pos = (char *) "Admin";
 
     // Выполняем первую выборку
-    printf("Делаем выборку по полю \"%s\" со значением %d\n\"", selyear, year);
+    printf("Select on the field \"%s\" with the value %d\n", selyear, year);
     selectBD.select(selyear, year);
     selectBD.write_buffer(selpath);
 
@@ -138,7 +124,7 @@ int main()
     openBD(&selectBD, selpath);
 
     // Выполняем выборку
-    printf("Делаем выборку по полю \"%s\" со значением %s\n\"", selfname, fname);
+    printf("Select on the field \"%s\" with the value %s\n", selfname, fname);
     selectBD.select(selfname, fname);
     selectBD.write_buffer();
 
@@ -146,15 +132,14 @@ int main()
 
     openBD(&selectBD, selpath);
     // Выполняем выборку
-    printf("Делаем выборку по полю \"%s\" со значением %s\n\"", selpos, pos);
+    printf("Select on the field \"%s\" with the value %s\n", selpos, pos);
     selectBD.select(selpos, pos);
     selectBD.write_buffer();
 
-    printf("Результат операции записан в файл %s\n\n", selpath);
+    printf("Result in the file: %s\n\n", selpath);
 
     // закрываем файл базы данных
     selectBD.close();
-    printf("База данных закрыта\n\n\n");
 
     return 0;
 }
