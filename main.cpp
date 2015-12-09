@@ -106,7 +106,7 @@ int main()
     openBD(&selectBD, mpath);
 
     char *selyear = (char *) "years";
-    char *selfname = (char *) "fnames";
+    char *selfname = (char *) "fname";
     char *selpos = (char *) "position";
     int year = 30;
     char *fname = (char *) "Maria";
