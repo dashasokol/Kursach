@@ -3,18 +3,18 @@
  *  @brief	Вспомогательные функции, которые нужны в большинстве программ, но для которых не существует библиотек в базовом языке
  * 
  */
-#include <stdio.h>                        // printf, scanf, NULL 
-#include <string.h>                       // strstr, str[n]cat, strlen
-#include <stdlib.h>                       // malloc, free, rand
-#include <unistd.h>
-#include "helpfun.h"    						// Заголовочный файл данного модуля
+#include <stdio.h>      // printf, scanf, NULL
+#include <string.h>     // strstr, str[n]cat, strlen
+#include <stdlib.h>     // malloc, free, rand
+#include <unistd.h>     // ftruncate
+#include "helpfun.h"    // Заголовочный файл данного модуля
 
 /**
  * @fn int indexOf(char *str, char *substring, enum vector_type vector)
  * @brief Функция вычиления первого вхождения подстроки в строку
  * @param str - Строка в которой производится поиск
  * @param substring - Искомая строка
- * @param vector - Сторона с которой производится поиск символа
+ * @param vector - Сторока с которой производится поиск символа
  * @return Индекс первого вхождения символа в строку / -1 - строка не найдена
  *
  * Пример:\n
@@ -26,12 +26,14 @@
 int indexOf(char *str, char *substring, enum vector_type vector)
 {
     char *rem_string;	// указатель на обрезанную строку
-    int i; 		// счётчик
+    int i;              // счётчик
+
 
     if (vector == LEFT) {
-        rem_string = strstr(str, substring); // находим первое вхождение
+        /* находим первое вхождение */
+        rem_string = strstr(str, substring);
 
-        /* если найден разделитель высчитать его местоположение */
+        /* если найдена строка высчитать её местоположение */
         if (rem_string)
             return strlen(str) - strlen(rem_string);
     }
@@ -41,6 +43,8 @@ int indexOf(char *str, char *substring, enum vector_type vector)
         for (i=strlen(str)-1; i >= 0; i--)
         {
             rem_string = strstr(&str[i], substring);
+
+            /* если найдена строка высчитать её местоположение */
             if (rem_string)
                 return strlen(str) - strlen(rem_string);
         }
@@ -67,10 +71,10 @@ int indexOf(char *str, char *substring, enum vector_type vector)
  */
 int spacecut(char *out, char *str, enum vector_type vector)
 {
-    char string[STRING_MAX_LINE];                       // строка, которая будет преобразовываться
-    char cut_string[strlen(str)];                       // строка, которая будет вырезана из string
-    unsigned int i, 											// счётчик
-          j;                                            // счётчик
+    char string[STRING_MAX_LINE];   // строка, которая будет преобразовываться
+    char cut_string[strlen(str)];   // строка, которая будет вырезана из string
+    unsigned int i,                 // счётчик
+                 j;                 // счётчик
 
     if (strspn(str, " ") != strlen(str))
     {
@@ -151,10 +155,10 @@ int spacecut(char *out, char *str, enum vector_type vector)
  */
 int colMatch(char *string, char *substring)
 {
-    int index = -1; // новое положение коретки
-    unsigned int ret = 0;    // счтётчик
+    int index = -1;         // новое положение коретки
+    unsigned int ret = 0;   // счтётчик
 
-    /* обрезаем строку при нахождении подстроки в троке */
+    /* обрезаем строку при нахождении подстроки в строке */
     while (indexOf(&string[index+1], substring, LEFT) >= 0)
         {
             index=index+indexOf(&string[index+1], substring, LEFT) + 1;
@@ -175,12 +179,12 @@ int colMatch(char *string, char *substring)
  */
 int fmwrite(FILE * file, void * Data, int size, int from)
 {
-    unsigned int s;          // размер файла
-    unsigned int nsize;      // размер итогового файла
-    unsigned int alloc;      // требуемый размер буфера, значение меньшее, чем BSIZE или равное ему
-    int pose;       // текщая позиция (при переносе) или итоговая
-    unsigned int read;       // размер смещаемой информации
-    char * temp;    // буфер, содержащий строку для смещения
+    unsigned int s;         // размер файла
+    unsigned int nsize;     // размер итогового файла
+    unsigned int alloc;     // требуемый размер буфера, значение меньшее, чем BSIZE или равное ему
+    int pose;               // текщая позиция (при переносе) или итоговая
+    unsigned int read;      // размер смещаемой информации
+    char * temp;            // буфер, содержащий строку для смещения
 
     /* переходим в конец файла */
     fseek(file, 0, SEEK_END);
@@ -196,6 +200,7 @@ int fmwrite(FILE * file, void * Data, int size, int from)
     alloc = BSIZE > s ? s-from : BSIZE;
     temp = (char*) malloc(alloc);
 	
+    /* зануляем массив */
     memset(temp, '\0', alloc);
     pose = nsize;
     
@@ -208,7 +213,8 @@ int fmwrite(FILE * file, void * Data, int size, int from)
         fseek(file,pose - size - read,SEEK_SET);
         fread((void*)temp,read,1,file);
 
-        int carr = colMatch(temp, (char *) "\n"); // подсчёт переносов, для вычисления переносов каретки
+        /* подсчёт переносов, для вычисления переносов каретки (carr = 0 для Linux) */
+        int carr = colMatch(temp, (char *) "\n");
         read -= carr;
         temp[read] = '\0';
 
@@ -240,13 +246,14 @@ int fmwrite(FILE * file, void * Data, int size, int from)
  */
 int fmclean(FILE * file, int size, unsigned int from)
 {
-    unsigned int s;                      // размер файла
-    unsigned int nsize;                  // размер итогового файла
-    unsigned int alloc;                  // требуемый размер буфера, значение меньшее, чем BSIZE или равное ему
-    unsigned int pose;                   // текщая позиция
-    char *temp;                 // буфер, содержащий строку для смещения
-    unsigned int offset = from + size;   // начало следующего блока данных
-    char last[1];     // последний символ
+    unsigned int s;                     // размер файла
+    unsigned int nsize;                 // размер итогового файла
+    unsigned int alloc;                 // требуемый размер буфера,
+                                        // значение меньшее, чем BSIZE или равное ему
+    unsigned int pose;                  // текщая позиция
+    char *temp;                         // буфер, содержащий строку для смещения
+    unsigned int offset = from + size;  // начало следующего блока данных
+    char last[1];                       // последний символ
     
     /* переходим в конец файла */
     fseek(file, 0, SEEK_END);
@@ -254,10 +261,14 @@ int fmclean(FILE * file, int size, unsigned int from)
     /* определяем размер итогового файла */
     s = ftell(file);
 
-    // отчистить весь файл
+    /* отчистить весь файл */
     if (size < 0)
         size = s;
 
+    /*
+     * если файл меньше, чем возможно удалить, уменьшеить
+     * требуемое количество знаков для удаления
+     */
     if (s < from + size)
         size = s - from;
 
@@ -266,6 +277,7 @@ int fmclean(FILE * file, int size, unsigned int from)
     if (last[0] == '\n')
         s++;
     
+    /* вычисляем размер итогового файла */
     nsize = s - size;
 
     /* переходим в место вставки */
@@ -304,13 +316,20 @@ int fmclean(FILE * file, int size, unsigned int from)
  * @brief Оболочка для функции strcmp, исключающая ошибки (остутсвие строки)
  * @param str1 - Первая строка
  * @param str2 - Вторая строка
- * @return Код ошибки / удачного завершения
+ * @return -1 - первая строка меньше, 0 - строки одинаковы,
+ *          1 - вторая строка меньше, 255 - ошибка
  */
 int strmcmp(const char *str1, const char *str2)
 {
+    int ret;    // Код возврата
+
+    /* если обса значения существуют, сравнить их */
     if (str1 && str2)
-        return strcmp(str1, str2);
-    
+    {
+        ret = strcmp(str1, str2);
+        return ret > 0 ? 1 : ret < 0 ? -1 : 0;
+    }
+
     /* если одно из значений или оба являются NULL вывести код ошибки */
     return 255;
 }
@@ -327,8 +346,9 @@ int strmcmp(const char *str1, const char *str2)
  */
 FILE *fmopen(char *file, const char *flag, const char *errstr)
 {
-    FILE *temp = fopen(file, flag);
+    FILE *temp = fopen(file, flag);     // Дескриптор файла
 
+    /* убираем буферизацию записи в файл */
     setvbuf(temp, NULL, _IONBF, 0);
 
     // если файл не открыт
@@ -341,35 +361,44 @@ FILE *fmopen(char *file, const char *flag, const char *errstr)
 
 /**
  * @fn void qsort_proc(int *order, void *vmas, int left, int right,
-                int (*cmp) (void *, int, int))
+                       int (*cmp) (void *, int, int))
  * @brief Функция сортировки одного массива, относительно элементов другого
  * @param order - Индексы, которые будут сортироваться
  * @param vmas - Массив значений из структуры, по которому будет сортироваться order
  * @param left - Начальный индекс сортируемых элементов
  * @param right - Конечный индекс сортируемых элементов
+ * @param cmp - обработчик сравнения значений
  *
  * Примечание: Для случая, когда нужно сортировать структуры по индексу
  */
 void qsort_proc(int *order, void *vmas, int left, int right,
                 int (*cmp) (void *, int, int))
 {
-    int i = 0;  // счетчик
-    int last = 0; // последний элемент
+    int i = 0;          // счетчик
+    int last = 0;       // последний элемент
 
+    /* если уже отсортировано или в массиве один элемент */
     if (left >= right)
         return;
 
+    /* меняем местами крайний левый и средний элементы */
     swap(order, left, (left + right)/2);
     last = left;
 
+    /* сортируем массив относительно первого элемента */
     for (i = left+1; i <= right; i++)
     {
         if (cmp(vmas, order[i], order[left]) < 0)
             swap(order, ++last, i);
     }
 
+    /* меняем местами крайний левый и последний отсортированный*/
     swap(order, left, last);
+
+    /* сортируем левую часть массива */
     qsort_proc(order, vmas, left, last-1, cmp);
+
+    /* сортируем правую часть массива */
     qsort_proc(order, vmas, last+1, right, cmp);
 }
 
@@ -379,12 +408,15 @@ void qsort_proc(int *order, void *vmas, int left, int right,
  * @param csmas - Указатель на массив данных
  * @param pos1 - Позиция первой строки
  * @param pos2 - Позиция второй строки
- * @return <0 - первая строка меньше, 0 - строки одинаковы, >0 - вторая строка меньше
+ * @return -1 - первая строка меньше, 0 - строки одинаковы,
+ *          1 - вторая строка меньше, 255 - ошибка
  */
 int cmp_string(void *csmas, int pos1, int pos2)
 {
-    char **pcsmas = (char **)csmas;
+    char **pcsmas = (char **)csmas; // указатель на массив типа char, получемых
+                                    // через void
 
+    /* сравниваем строки */
     return strmcmp(pcsmas[pos1], pcsmas[pos2]);
 }
 
@@ -394,12 +426,15 @@ int cmp_string(void *csmas, int pos1, int pos2)
  * @param csmas - Указатель на массив данных
  * @param pos1 - Позиция первой строки
  * @param pos2 - Позиция второй строки
- * @return -1 - первая строка меньше, 0 - строки одинаковы, 1 - вторая строка меньше
+ * @return -1 - первая переменная меньше, 0 - переменные одинаковы,
+ *          1 - вторая переменная меньше
  */
 int cmp_int(void *csmas, int pos1, int pos2)
 {
-    int *pcsmas = (int *)csmas;
+    int *pcsmas = (int *)csmas; // указатель на массив типа int, получемых
+                                // через void
 
+    /* сравниваем значения и возвращаем код завершения функции */
     return pcsmas[pos1] < pcsmas[pos2] ? -1 : \
            pcsmas[pos1] > pcsmas[pos2] ? 1 : 0;
 }
@@ -414,15 +449,19 @@ int cmp_int(void *csmas, int pos1, int pos2)
  */
 void qsort_dmas(int *order, void *mas, unsigned int col_el, srt_type type)
 {
+    /* определяем к какому типу принадлежат данные */
     switch (type)
     {
     case T_INT:
+        /* сортируем массив типа int */
         qsort_proc(order, mas, 0, col_el, cmp_int);
         break;
     case T_CHAR:
+        /* сортируем массив типа char */
         qsort_proc(order, mas, 0, col_el, cmp_string);
         break;
     default:
+        /* тип ввден неверно */
         fprintf(stderr, "Wrong variable type\n");
         return;
     }
@@ -437,7 +476,9 @@ void qsort_dmas(int *order, void *mas, unsigned int col_el, srt_type type)
  */
 void swap(int *mas, int var1, int var2)
 {
-    int tmp;
+    int tmp;    // временная переменная
+
+    /* меняем местами значения элементов */
     tmp = mas[var1];
     mas[var1] = mas[var2];
     mas[var2] = tmp;
