@@ -9,7 +9,20 @@
 #include <unistd.h>
 #include "helpfun.h"    						// Заголовочный файл данного модуля
 
-// Функция вычиления первого вхождения подстроки в строку
+/**
+ * @fn int indexOf(char *str, char *substring, enum vector_type vector)
+ * @brief Функция вычиления первого вхождения подстроки в строку
+ * @param str - Строка в которой производится поиск
+ * @param substring - Искомая строка
+ * @param vector - Сторона с которой производится поиск символа
+ * @return Индекс первого вхождения символа в строку / -1 - строка не найдена
+ *
+ * Пример:\n
+ * @code
+ * indexOf(string, substring, LEFT); // Определние индекса первого вхождения с начала строки
+ * indexOf(string, substring, RIGHT); // Определние индекса первого вхождения с конца строки
+ * @endcode
+ */
 int indexOf(char *str, char *substring, enum vector_type vector)
 {
     char *rem_string;	// указатель на обрезанную строку
@@ -35,7 +48,23 @@ int indexOf(char *str, char *substring, enum vector_type vector)
     return -1;
 }
 
-// Функция удаляния пробелов из строки
+/**
+ * @fn int spacecut(char *out, char *str, enum vector_type vector)
+ * @brief Функция удаляния пробелов из строки
+ * @param out - Строка вывода
+ * @param str - Строка для обработки
+ * @param vector - Сторона с которой производится поиск символа
+ * @return 0 - удаление произведено / 1 - искомая строка не найдена
+ *
+ * Пример:\n
+ * Строка line: " 1 1 1 1 "\n
+ * @code
+ * spacecut(endline, line, LEFT); // endline: "1 1 1 1 "
+ * spacecut(endline, line, RIGHT); // endline: " 1 1 1 1"
+ * spacecut(endline, line, RIGHTLEFT); // endline: "1 1 1 1"
+ * spacecut(endline, line, ALL); // endline: "1111"
+ * @endcode
+ */
 int spacecut(char *out, char *str, enum vector_type vector)
 {
     char string[STRING_MAX_LINE];                       // строка, которая будет преобразовываться
@@ -113,7 +142,13 @@ int spacecut(char *out, char *str, enum vector_type vector)
     return 0;
 }
 
-// Функция посчёта вхождений подстроки в строку
+/**
+ * @fn int colMatch(char *string, char *substring)
+ * @brief Функция посчёта вхождений подстроки в строку
+ * @param string
+ * @param substring
+ * @return Количество вхождений
+ */
 int colMatch(char *string, char *substring)
 {
     int index = -1; // новое положение коретки
@@ -129,7 +164,15 @@ int colMatch(char *string, char *substring)
     return ret;
 }
 
-// Функция записи сиволов в конкретную позицию файла
+/**
+ * @fn int fmwrite(FILE * file, void * Data, int size, int from)
+ * @brief Функция записи сиволов в конкретную позицию файла
+ * @param file - Указатель на файл
+ * @param Data - Указатель на блок данных
+ * @param size - Размер блока данных
+ * @param from - Смещение относительно начала файла
+ * @return Код ошибки / удачного завершения
+ */
 int fmwrite(FILE * file, void * Data, int size, int from)
 {
     unsigned int s;          // размер файла
@@ -187,7 +230,14 @@ int fmwrite(FILE * file, void * Data, int size, int from)
         return 1;
 }
 
-// Функция удаления сиволов с конкретной позиции файла
+/**
+ * @fn int fmclean(FILE * file, int size, int from)
+ * @brief Функция удаления сиволов с конкретной позиции файла
+ * @param file - Указатель на файл
+ * @param size - Размер блока данных (если -1 - отчистить весь файл)
+ * @param from - Смещение относительно начала файла
+ * @return Код ошибки / удачного завершения
+ */
 int fmclean(FILE * file, int size, unsigned int from)
 {
     unsigned int s;                      // размер файла
@@ -249,7 +299,13 @@ int fmclean(FILE * file, int size, unsigned int from)
     return ftruncate(fileno(file), nsize);
 }
 
-// Оболочка для функции strcmp, исключающая ошибки
+/**
+ * @fn int strmcmp(const char *str1, const char *str2)
+ * @brief Оболочка для функции strcmp, исключающая ошибки (остутсвие строки)
+ * @param str1 - Первая строка
+ * @param str2 - Вторая строка
+ * @return Код ошибки / удачного завершения
+ */
 int strmcmp(const char *str1, const char *str2)
 {
     if (str1 && str2)
@@ -259,7 +315,16 @@ int strmcmp(const char *str1, const char *str2)
     return 255;
 }
 
-// функция открывающая файл
+/**
+ * @fn FILE *fmopen(char *file, const char *flag, const char *errstr)
+ * @brief Функция открывающая файл и отключающая буферизацию записи
+ * @param file - Полное имя файла
+ * @param flag - Режим открытия файла
+ * @param errstr - Сообщение для вывода, в случае неудачного открытия файла
+ * @return Дескриптор файла
+ *
+ * Примечание: Чтобы не использовать fflush (сброс буферов)
+ */
 FILE *fmopen(char *file, const char *flag, const char *errstr)
 {
     FILE *temp = fopen(file, flag);
@@ -274,6 +339,17 @@ FILE *fmopen(char *file, const char *flag, const char *errstr)
     return temp;
 }
 
+/**
+ * @fn void qsort_proc(int *order, void *vmas, int left, int right,
+                int (*cmp) (void *, int, int))
+ * @brief Функция сортировки одного массива, относительно элементов другого
+ * @param order - Индексы, которые будут сортироваться
+ * @param vmas - Массив значений из структуры, по которому будет сортироваться order
+ * @param left - Начальный индекс сортируемых элементов
+ * @param right - Конечный индекс сортируемых элементов
+ *
+ * Примечание: Для случая, когда нужно сортировать структуры по индексу
+ */
 void qsort_proc(int *order, void *vmas, int left, int right,
                 int (*cmp) (void *, int, int))
 {
@@ -297,6 +373,14 @@ void qsort_proc(int *order, void *vmas, int left, int right,
     qsort_proc(order, vmas, last+1, right, cmp);
 }
 
+/**
+ * @fn int cmp_string(void *csmas, int pos1, int pos2)
+ * @brief Функция равнения лексиграфического строк, переданных через void указатель
+ * @param csmas - Указатель на массив данных
+ * @param pos1 - Позиция первой строки
+ * @param pos2 - Позиция второй строки
+ * @return <0 - первая строка меньше, 0 - строки одинаковы, >0 - вторая строка меньше
+ */
 int cmp_string(void *csmas, int pos1, int pos2)
 {
     char **pcsmas = (char **)csmas;
@@ -304,6 +388,14 @@ int cmp_string(void *csmas, int pos1, int pos2)
     return strmcmp(pcsmas[pos1], pcsmas[pos2]);
 }
 
+/**
+ * @fn cmp_int(void *csmas, int pos1, int pos2)
+ * @brief Функция сравнения целочисленных значений
+ * @param csmas - Указатель на массив данных
+ * @param pos1 - Позиция первой строки
+ * @param pos2 - Позиция второй строки
+ * @return -1 - первая строка меньше, 0 - строки одинаковы, 1 - вторая строка меньше
+ */
 int cmp_int(void *csmas, int pos1, int pos2)
 {
     int *pcsmas = (int *)csmas;
@@ -312,6 +404,14 @@ int cmp_int(void *csmas, int pos1, int pos2)
            pcsmas[pos1] > pcsmas[pos2] ? 1 : 0;
 }
 
+/**
+ * @fn void qsort_dmas(int *order, void *mas, unsigned int col_el, srt_type type)
+ * @brief Функция оболочка над qsort_proc
+ * @param order - Индексы, которые будут сортироваться
+ * @param mas - Массив значений из структуры, по которому будет сортироваться order
+ * @param col_el - Количество элементов, по которым будет происходить сортировка
+ * @param type - Тип данных в массиве mas
+ */
 void qsort_dmas(int *order, void *mas, unsigned int col_el, srt_type type)
 {
     switch (type)
@@ -328,6 +428,13 @@ void qsort_dmas(int *order, void *mas, unsigned int col_el, srt_type type)
     }
 }
 
+/**
+ * @fn void swap(int *mas, int var1, int var2)
+ * @brief Функция, меняющая местами значения элементов целочисленного массива
+ * @param mas - Массив значений
+ * @param var1 - Первая переменная
+ * @param var2 - Вторая переменная
+ */
 void swap(int *mas, int var1, int var2)
 {
     int tmp;
