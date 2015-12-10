@@ -3,9 +3,9 @@
  *  @brief	Вспомогательные функции, которые нужны в большинстве программ, но для которых не существует библиотек в базовом языке
  * 
  */
-#include <stdio.h>      // printf, scanf, NULL
-#include <string.h>     // strstr, str[n]cat, strlen
-#include <stdlib.h>     // malloc, free, rand
+#include <iostream>     // printf, scanf, NULL
+#include <cstring>      // strstr, str[n]cat, strlen
+#include <cstdlib>      // malloc, free, rand
 #include <unistd.h>     // ftruncate
 #include "helpfun.h"    // Заголовочный файл данного модуля
 

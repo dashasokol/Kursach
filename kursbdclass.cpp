@@ -1,63 +1,85 @@
-#include <fcntl.h>
-#include <stdio.h>
-#include <cstdlib>
-#include <string.h>
-#include <typeinfo>
-#include "helpfun.h"
-#include "kursbdclass.h"
+#include <iostream>         // printf, scanf, NULL
+#include <cstdlib>          // malloc, free, rand
+#include <cstring>          // strstr, str[n]cat, strlen
+#include "helpfun.h"        // Заголовочный файл helpfun
+#include "kursbdclass.h"    // Заголовочный файл этого модуля
 
+/* инициализация класса */
 KursBDClass::KursBDClass()
 {
-    table_length = 0;
-    order_len = 0;
+    table_length = 0;   // обнуляем количество элементов
+    order_len = 0;      // обнуляем размер массива сортировки
 }
 
+/**
+ * @fn int open(char *BD_file_name)
+ * @brief Оболочка для функции open_and_parse
+ * @param BD_file_name - Полное имя файла БД
+ * @return Код удачного открытия файла/ошибки
+ */
 int KursBDClass::open(char *BD_file_name)
 {
+    /* открываем файл и читаем БД */
     bd_out_file = open_and_parse(BD_file_name, tb, &table_length);
 
+    /* если база не прочиталась или файл не открылся */
     if (!bd_out_file)
         return END_OPEN_FAIL;
 
+    /* чтение БД прошло удачно */
     return END_OK;
 }
 
+/**
+ * fn FILE *open_and_parse(char *BD_file_name, struct table *data_table, unsigned int *tb_len)
+ * @brief Функция открывает и читает БД из файла
+ * @param BD_file_name - Полное имя файла БД
+ * @param data_table - структура с данными
+ * @param tb_len - размер БД
+ * @return Дескриптор файла
+ */
 FILE *KursBDClass::open_and_parse(char *BD_file_name, struct table *data_table, unsigned int *tb_len)
 {
     char buff[LINELEN];        // буфер
     int str_num = 0;           // номер строки
-    int buff_len = 0;          // запоминанете длиннай строки, на случай, если строка не коректа, но после неё следуют корректные
-    int end = 0;               // позиция в файле
     FILE *out_file;            // дескриптор файла
 
 
-    // открываем файл
+    /* открываем файл */
     out_file = fmopen(BD_file_name, "r+", "KursBDClass::open");
 
+    /* Не вышло открыть файл */
     if (!out_file)
         return out_file;
 
-    // считываем данные в структуру
+    /* считываем построчно данные в структуру */
     while(fgets(buff, LINELEN, out_file))
     {
-        if ((end = parse(buff, data_table, tb_len)) == END_WRONG_FORMAT)
+        /* парсим строку */
+        if (parse(buff, data_table, tb_len) == END_WRONG_FORMAT)
         {
-            fprintf(stderr, "Line %d: Wrong string format\n\r", str_num);
-            buff_len += strlen(buff)+1;
+            /* строка имеет неправильный формат */
+            fprintf(stderr, "Line %d: Wrong string format\n", str_num);
         }
 
+        /* увеличиваем номер строки */
         str_num++;
     }
 
     return out_file;
 }
 
+/**
+ * @fn void close()
+ * @brief Функция закрытия БД
+ */
 void KursBDClass::close()
 {
-    unsigned int i = 0;
+    unsigned int i = 0; // счетчик
 
-    fclose(bd_out_file);
+    fclose(bd_out_file); // закрытие файла
 
+    // обнуление структуры
     for (i = 0; i < table_length; i++)
     {
         tb[i].id = 0;
@@ -67,53 +89,70 @@ void KursBDClass::close()
         tb[i].position[0] = '\0';
     }
 
+    // обнуление количества строк в БД
     table_length = 0;
-
 }
 
+/**
+ * @fn int parse(char *string_to_parse, struct table *data_table, unsigned int *tb_len)
+ * @brief Функция обработки строки
+ * @param string_to_parse - строка
+ * @param data_table - указатель на структуру БД
+ * @param tb_len - количество записей в таблице
+ * @return Код удачного завершения / ошибки
+ */
 int KursBDClass::parse(char *string_to_parse, struct table *data_table, unsigned int *tb_len)
 {
-    int pos = 0;
+    int pos = 0; // позиция для чтения
 
+    /* если найден комментарий, пропустить строку */
     if (string_to_parse[pos] == '#')
         return END_EXIT;
 
+    /* проверка строки на соответствующее число символов разделителей */
     if (colMatch(string_to_parse, (char *) SEPARATOR) < MAX_COLUMNS - 1)
         return END_WRONG_FORMAT;
 
-    // извлекаем идентификатор
+    /* извлекаем идентификатор */
     if ((pos = getValue(&data_table[*tb_len].id, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
-    // извлекаем имя
+    /* извлекаем имя */
     if ((pos = getValue(data_table[*tb_len].fname, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
-    // извлекаем фамилию
+    /* извлекаем фамилию */
     if ((pos = getValue(data_table[*tb_len].lname, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
-    // извлекаем количество лет
+    /* извлекаем количество лет */
     if ((pos = getValue(&data_table[*tb_len].years, string_to_parse)) != END_WRONG_FORMAT)
         string_to_parse += pos + 1;
     else
         return pos;
 
-    // извлекаем должность
+    /* извлекаем должность */
     if ((pos = getValue(data_table[*tb_len].position, string_to_parse)) == END_WRONG_FORMAT)
         return pos;
 
+    /* увеличиваем количество записей в таблице */
     (*tb_len)++;
 
     return END_OK;
 }
 
+/**
+ * @brief KursBDClass::getValue
+ * @param var
+ * @param val
+ * @return
+ */
 int KursBDClass::getValue(unsigned int *var, char *val)
 {
     // поиск символа разделителя
