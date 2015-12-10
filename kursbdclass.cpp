@@ -412,7 +412,7 @@ int KursBDClass::sort(char *field)
 
 int KursBDClass::sort_table(int *ord, char *field, struct table *data_table, unsigned int tb_len)
 {
-    int type;
+    srt_type type;
     unsigned int i;
 
     if (strmcmp(field, "id") == 0)
@@ -423,7 +423,7 @@ int KursBDClass::sort_table(int *ord, char *field, struct table *data_table, uns
         for (i = 0; i < tb_len; i++)
             values[i] = data_table[i].id;
 
-        qsort_dmas(ord, values, 0, tb_len-1);
+        qsort_dmas(ord, values, tb_len-1, type);
     }
     else if (strmcmp(field, "years") == 0)
     {
@@ -433,38 +433,39 @@ int KursBDClass::sort_table(int *ord, char *field, struct table *data_table, uns
         for (i = 0; i < tb_len; i++)
             values[i] = data_table[i].years;
 
-        qsort_dmas(ord, values, 0, tb_len-1);
+        qsort_dmas(ord, values, tb_len-1, type);
 
     }
     else if (strmcmp(field, "fname") == 0)
     {
-        char values[LINELEN][TABLELINES];
+        char *values[TABLELINES];
 
         type = T_CHAR;
-        for (i = 0; i < tb_len; i++)
-            strcpy(values[i], data_table[i].fname);
 
-        qsort_dmas(ord, values, 0, tb_len-1);
+        for (i = 0; i < tb_len; i++)
+            values[i] = data_table[i].fname;
+
+        qsort_dmas(ord, values, tb_len-1, type);
     }
     else if (strmcmp(field, "lname") == 0)
     {
-        char values[LINELEN][TABLELINES];
+        char *values[TABLELINES];
 
         type = T_CHAR;
         for (i = 0; i < tb_len; i++)
-            strcpy(values[i], data_table[i].lname);
+            values[i] = data_table[i].lname;
 
-        qsort_dmas(ord, values, 0, tb_len-1);
+        qsort_dmas(ord, values, tb_len-1, type);
     }
     else if (strmcmp(field, "position") == 0)
     {
-        char values[LINELEN][TABLELINES];
+        char *values[TABLELINES];
 
         type = T_CHAR;
         for (i = 0; i < tb_len; i++)
-            strcpy(values[i], data_table[i].position);
+            values[i] = data_table[i].position;
 
-        qsort_dmas(ord, values, 0, tb_len-1);
+        qsort_dmas(ord, values, tb_len-1, type);
     }
     else
     {

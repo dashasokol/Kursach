@@ -35,37 +35,6 @@ int indexOf(char *str, char *substring, enum vector_type vector)
     return -1;
 }
 
-// Функция удаления всех вхождений подстроки в строку
-int charcut(char *out, char *str, char *substring)
-{
-    unsigned int i,                                            // счётчик
-          j;                                            // счётчик
-    char string[STRING_MAX_LINE];                       // строка, которая будет преобразовываться
-    unsigned int found = 0;                                      // символ найден
-    
-    /* отчищаем строку для изменения */
-    memset(string, 0, sizeof(string));
-
-    /* добавляем посимвольно строку, исключая пробелы */
-    for (i=j=0;i<strlen(str);i++)
-    {
-        if (strspn(&str[i], substring) == 0)
-            string[j++] = str[i];
-        else
-            found = 1;
-    }
-    
-    /* вычисляем строку вывода */
-    memset(out, 0, (int) sizeof(out));
-    strcpy(out, string);
-
-    /* вставляем нуль-терминатор */
-    out[strlen(string)+1] = '\0';
-
-    /* выводим обработанную строку */
-    return found;
-}
-
 // Функция удаляния пробелов из строки
 int spacecut(char *out, char *str, enum vector_type vector)
 {
@@ -283,26 +252,11 @@ int fmclean(FILE * file, int size, unsigned int from)
 // Оболочка для функции strcmp, исключающая ошибки
 int strmcmp(const char *str1, const char *str2)
 {
-    
     if (str1 && str2)
         return strcmp(str1, str2);
     
     /* если одно из значений или оба являются NULL вывести код ошибки */
     return 255;
-}
-
-// Функция для проверки существования файла
-int fileExist(char *file)
-{
-    FILE *config;           // указатель на файл
-    
-    /* пытаемся открыть файл, если файл успешно открыт, то файл существет, иначе - файл не существует*/
-    if ((config = fopen(file, "r")) == NULL)
-            return 2;
-    
-    fclose(config);  // закрываем файл
-    
-    return 0;
 }
 
 // функция открывающая файл
@@ -320,7 +274,8 @@ FILE *fmopen(char *file, const char *flag, const char *errstr)
     return temp;
 }
 
-void qsort_dmas(int *v, int *mas, int left, int right)
+void qsort_proc(int *order, void *vmas, int left, int right,
+                int (*cmp) (void *, int, int))
 {
     int i = 0;  // счетчик
     int last = 0; // последний элемент
@@ -328,53 +283,49 @@ void qsort_dmas(int *v, int *mas, int left, int right)
     if (left >= right)
         return;
 
-    swap(v, left, (left + right)/2);
-    last = left;
-
-    for (i = left+1; i <= right; i++)
-        if (mas[v[i]] < mas[v[left]])
-            swap(v, ++last, i);
-
-    swap(v, left, last);
-    qsort_dmas(v, mas, left, last-1);
-    qsort_dmas(v, mas, last+1, right);
-}
-
-void qsort_dmas(int *v, char (*mas)[TLSIZE], int left, int right)
-{
-    int i = 0;  // счетчик
-    int last = 0; // последний элемент
-
-    if (left >= right)
-        return;
-
-    swap(v, left, (left + right)/2);
+    swap(order, left, (left + right)/2);
     last = left;
 
     for (i = left+1; i <= right; i++)
     {
-        if (strmcmp(mas[v[i]], mas[v[left]]) < 0)
-            swap(v, ++last, i);
+        if (cmp(vmas, order[i], order[left]) < 0)
+            swap(order, ++last, i);
     }
 
-    swap(v, left, last);
-    qsort_dmas(v, mas, left, last-1);
-    qsort_dmas(v, mas, last+1, right);
+    swap(order, left, last);
+    qsort_proc(order, vmas, left, last-1, cmp);
+    qsort_proc(order, vmas, last+1, right, cmp);
 }
 
-void qsort_dmas(int *v, void *mas, int maslen, int left, int right, int type)
+int cmp_string(void *csmas, int pos1, int pos2)
 {
-    if (type == T_INT)
+    char **pcsmas = (char **)csmas;
+
+    return strmcmp(pcsmas[pos1], pcsmas[pos2]);
+}
+
+int cmp_int(void *csmas, int pos1, int pos2)
+{
+    int *pcsmas = (int *)csmas;
+
+    return pcsmas[pos1] < pcsmas[pos2] ? -1 : \
+           pcsmas[pos1] > pcsmas[pos2] ? 1 : 0;
+}
+
+void qsort_dmas(int *order, void *mas, unsigned int col_el, srt_type type)
+{
+    switch (type)
     {
-//TODO
-    }
-    else if (type == T_CHAR)
-    {
-//TODO
-    }
-    else
+    case T_INT:
+        qsort_proc(order, mas, 0, col_el, cmp_int);
+        break;
+    case T_CHAR:
+        qsort_proc(order, mas, 0, col_el, cmp_string);
+        break;
+    default:
         fprintf(stderr, "Wrong variable type\n");
         return;
+    }
 }
 
 void swap(int *mas, int var1, int var2)

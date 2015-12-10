@@ -22,7 +22,7 @@ enum vector_type {
     RIGHTLEFT = 4,      // с начала и с конца строки
 };
 
-enum {
+enum srt_type {
     T_INT = 1,            // тип int
     T_CHAR = 2,          // тип char
 };
@@ -42,25 +42,6 @@ enum {
  * @endcode
  */
 int indexOf(char *str, char *substring, enum vector_type vector);
-
-/**
- * @fn int charcut(char *out, char *str, char *substring)
- * @brief Функция удаления всех вхождений подстроки в строку
- * @param out - Строка вывода
- * @param str - Строка для обработки
- * @param substring - Искомая строка
- * @return 0 - удаление произведено / 1 - искомая строка не найдена
- *
- * Пример:\n
- * Строка line: "12121212"\n
- * Подстрока subline: "1"\n
- * Строка, в которую выводится данные endline: ""\n
- * @code
- * charcut(endline, line, subline);
- * @endcode
- * endline: "2222"
- */
-int charcut(char *out, char *str, char *substring);
 
 /**
  * @fn int spacecut(char *out, char *str, enum vector_type vector)
@@ -120,21 +101,15 @@ int fmclean(FILE * file, int size, unsigned int from);
  */
 int strmcmp(const char *str1, const char *str2);
 
-/**
- * @fn int fileExist(char *file)
- * @brief Функция для проверки существования файла
- * @param file - Полное имя файла
- * @return 0 - файл найден / 2 - файл не найден
- */
-int fileExist(char *file);
-
 FILE *fmopen(char *file, const char *flag, const char *errstr);
 
-void qsort_dmas(int *v, int *mas, int left, int right);
+void qsort_proc(int *order, void *vmas, size_t length, int left,
+                int right, int (*cmp) (const void *, int, int));
 
-void qsort_dmas(int *v, char (*mas)[TLSIZE], int left, int right);
+void qsort_dmas(int *order, void *mas, size_t length,  srt_type type);
 
-void qsort_dmas(int *v, void *mas, unsigned int maslen, int left, int right, int type);
+int cmp_string(void *csmas, int pos1, int pos2);
+int cmp_int(void *csmas, int pos1, int pos2);
 
 void swap(int *mas, int var1, int var2);
 
