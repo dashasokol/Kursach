@@ -36,49 +36,56 @@ enum
 class KursBDClass
 {
     struct table tb[TABLELINES];                    // структура с данными
-    char string_for_write[LINELEN * TABLELINES];
-    unsigned int order_len;
+    char string_for_write[LINELEN * TABLELINES];    // строка вывода
+    unsigned int order_len;                         // длинна массива, по которому
+                                                    // определяется порядок вывода
     int order[TABLELINES];                          // массив, по которому
-                                                    // определяется порядок
+                                                    // определяется порядок вывода
     unsigned int table_length;                      // количество записей в БД
-    FILE *bd_out_file;                              // файл вывода
+    FILE *bd_out_file;                              // дескриптор файла БД
     int parse(char *string_to_parse,
               struct table *data_table,
               unsigned int *tb_len);                // Функция обработки строки
-    int getValue(unsigned int *var, char *val);     // get_value для целочисленной переменной
-    int getValue(char *var, char *val);             // get_value для строковой переменной
-    int clean_db(FILE *bd);                         // удаление старых данных
-    int del_from_db(FILE *bd, int size, int pos);   // удалить из файла
-    int add_to_bd(FILE *bd, char *string, int pos); // добавить в файл
-    void valueInsert(char *string, char *value);    // добавление значения в строку формата БД
+    int getValue(unsigned int *var, char *val);     // Функция, получающая целочисленное значение
+    int getValue(char *var, char *val);             // Функция, получающая строковое значение
+    int clean_db(FILE *bd);                         // Функция отчищает файл БД
+    int add_to_bd(FILE *bd, char *string);          // Оболочка для записи данных в файл БД
+    void valueInsert(char *string, char *value);    // Функция вставляет очередное значение в строку вывода
     void stringInsert(char *string,
-                      struct table insert_value);   // добавление строки в выводную строку формата БД
+                      struct table insert_value);   // Функция вставляет строку содержащую данные
+                                                    // одной записи из БД в строку вывода
     int sort_table(int *ord, char *field,
                    struct table *data_table,
-                   unsigned int tb_len);            // сортировка
+                   unsigned int tb_len);            // Функция сортировки одного массива относительно
+                                                    // значений другого
     FILE *open_and_parse(char *BD_file_name,
                          struct table *data_table,
                          unsigned int *tb_len);     // Функция открывает и читает БД из файла
-    void insert_and_sort(struct table *insert_value,
+    int insert_and_sort(struct table *insert_value,
                          unsigned int insert_value_len,
-                         char *field);              //вставка значений в таблицу и сортировка
-    void get_order_string();                        // получение строки вывода
-    void order_clear(unsigned int length);          // сброс порядка
+                         char *field);              // Функция которая добавляет записи в таблицу и
+                                                    // сортирует её
+    void get_order_string();                        // Функция записи данных в строку вывода
+    void order_clear(unsigned int length);          // Отчистка массива, по кторому определяется порядок
 public:
-    KursBDClass();                                  // инициализация
-    int open(char *BD_file_name);                   // открытие базы
-    void close();                                   // закрытие базы
-    void select(char *field, unsigned int value);   // выборка
-    void select(char *field, char *value);          // выборка
-    void insert(struct table insert_value);         // вставка
-    void del(char *field, unsigned int value);      // выборка
-    void del(char *field, char *value);             // выборка
-    int sort(char *field);                          // сортировка и запись
-    void insert_sort(struct table insert_value,
-                     char *field);                  // добавление значения в отсортированную таблицу
-    void merge(char *if_DB, char *field);           // TODO
-    int write_buffer(char *s_file_name);            // TODO
-    int write_buffer();                             // TODO
+    KursBDClass();                                  // Инициализация
+    int open(char *BD_file_name);                   // Оболочка для функции open_and_parse
+    void close();                                   // Функция закрытия БД
+    void select(char *field, unsigned int value);   // Функция ищет записи в таблице по послю, содержащему
+                                                    // целочисленные значения
+    void select(char *field, char *value);          // Функция ищет записи в таблице по послю, содержащему
+                                                    // строковые значения
+    void insert(struct table insert_value);         // Функция вставляет новое значение в строку вывода
+    void del(char *field, unsigned int value);      // Удаление всех записей, из поля соответствуюх
+                                                    // указанному целочисленному значению
+    void del(char *field, char *value);             // Удаление всех записей, из поля соответствуюх
+                                                    // строковому указанному значению
+    int sort(char *field);                          // Оболочка для функции сортировки по полю
+    int insert_sort(struct table insert_value,
+                     char *field);                  // Вставка в отсортированную БД
+    int merge(char *if_DB, char *field);            // Добавление данных из другой БД и последующая сортировка
+    int write_buffer(char *s_file_name);            // Функция записывает строку вывода в указанный файл
+    int write_buffer();                             // Функция записывает строку вывода в основной файл
 };
 
 #endif // KURSBDCLASS_H
