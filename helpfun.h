@@ -53,7 +53,7 @@ void qsort_proc(int *order, void *vmas, size_t length, int left,
                 int right, int (*cmp) (const void *, int, int));
 
 /* Функция оболочка над qsort_proc */
-void qsort_dmas(int *order, void *mas, size_t length,  srt_type type);
+void qsort_dmas(int *order, void *mas, unsigned int col_el, srt_type type);
 
 /* Функция равнения лексиграфического строк, переданных через void указатель */
 int cmp_string(void *csmas, int pos1, int pos2);

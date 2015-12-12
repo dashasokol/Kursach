@@ -1,6 +1,8 @@
 #include <iostream>         // printf, cout, cin, fprintf
 #include <cstring>          // strstr, str[n]cat, strlen
-#include <kursbdclass.h>    // заголовочный файл модуля класса
+#include <stdio.h>
+#include <stdlib.h>
+#include "kursbdclass.h"    // заголовочный файл модуля класса
 
 /* используем стандартное пространство имен */
 using namespace std;
@@ -52,12 +54,12 @@ int openBD(KursBDClass *BDclass, char *path)
     {
         /* не удалось открыть файл */
         printf("[Fail]\n");
-        return EXIT_FAILURE;
+        return 1;
     }
 
     /* файл удалось открыть */
     printf("[OK]\n\n");
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 /**
@@ -69,19 +71,19 @@ int openBD(KursBDClass *BDclass, char *path)
  */
 int sort(KursBDClass *BDclass, char *field)
 {
-    printf("Sort by field \"%s\"\n", field);
+    printf("C��������� �� ���� \"%s\"\n", field);
 
     /* фортируем БД */
     if (BDclass->sort(field) == END_NOT_FOUND)
     {
         /* указанного поля не существует */
         printf("[Fail]\n");
-        return EXIT_FAILURE;
+        return 1;
     }
 
     /* БД отсортирована */
     printf("[OK]\n");
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 /**
@@ -91,8 +93,11 @@ int sort(KursBDClass *BDclass, char *field)
  */
 int main()
 {
-    // создаём экземпляр класса
-    KursBDClass mainBD, scnDB, sortBD, sort2DB, selectBD;
+    /* ����� ��������� �� cp1251 */
+	system("chcp 1251 > nul");
+	
+    /* ������� ��������� ������ */ 
+    KursBDClass mainBD, scnDB, sortBD, selectBD;
 
     // неупорядоченные базы данных
     char mpath[FILENAMELEN];
@@ -148,8 +153,8 @@ int main()
     char *selfname = (char *) "fname";
     char *selpos = (char *) "position";
     int year = 30;
-    char *fname = (char *) "Maria";
-    char *pos = (char *) "Admin";
+    char *fname = (char *) "�����";
+    char *pos = (char *) "�������������";
 
     // Выполняем первую выборку
     printf("Select on the field \"%s\" with the value %d\n", selyear, year);
@@ -179,6 +184,9 @@ int main()
 
     // закрываем файл базы данных
     selectBD.close();
+
+	/* ��������� ��������� */
+	system("pause"); 
 
     return 0;
 }
