@@ -1,7 +1,6 @@
 #include <iostream>         // printf, cout, cin, fprintf
 #include <cstring>          // strstr, str[n]cat, strlen
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h>         // system
 #include "kursbdclass.h"    // заголовочный файл модуля класса
 
 /* используем стандартное пространство имен */
