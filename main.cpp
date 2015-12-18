@@ -1,94 +1,32 @@
 #include <iostream>         // printf, cout, cin, fprintf
 #include <cstring>          // strstr, str[n]cat, strlen
 #include <stdlib.h>         // system
-#include "kursbdclass.h"    // Р·Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» РјРѕРґСѓР»СЏ РєР»Р°СЃСЃР°
+#include "kursbdclass.h"    // заголовочный файл модуля класса
 
-/* РёСЃРїРѕР»СЊР·СѓРµРј СЃС‚Р°РЅРґР°СЂС‚РЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёРјРµРЅ */
+/* используем стандартное пространство имен */
 using namespace std;
 
-#define DBPATH "C:\\1\\"            // РїСѓС‚СЊ РґРѕ СЂР°Р±РѕС‡РµР№ РїР°РїРєРё
-#define MAINDBNAME "KurBD"          // РѕСЃРЅРѕРІРЅР°СЏ Р±Р°Р·Р°
-#define SECONDDBNAME "ScnBD"        // РІС‚РѕСЂР°СЏ Р±Р°Р·Р°
-#define SELECTBDNAME "SelectBD"     // С„Р°Р№Р» РґР»СЏ РІС‹РІРѕРґР° РєРѕРјР°РЅРґС‹ select
-#define SORTBDNAME "SortBD"         // С„Р°Р№Р» РґР»СЏ РІС‹РІРѕРґР° СЃРѕСЂС‚РёСЂРѕРІРєРё 1
-#define SORTSCNBDNAME "SortscnBD"   // С„Р°Р№Р» РґР»СЏ РІС‹РІРѕРґР° СЃРѕСЂС‚РёСЂРѕРІРєРё 2
-#define FILENAMELEN 255             // РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅРЅР° РёРјРµРЅРё С„Р°Р№Р»Р°
+#define DBPATH "C:\\1\\"            // путь до рабочей папки
+#define MAINDBNAME "KurBD"          // основная база
+#define SECONDDBNAME "ScnBD"        // вторая база
+#define SELECTBDNAME "SelectBD"     // файл для вывода команды select
+#define SORTBDNAME "SortBD"         // файл для вывода сортировки 1
+#define SORTSCNBDNAME "SortscnBD"   // файл для вывода сортировки 2
+#define FILENAMELEN 255             // максимальная длинна имени файла
 
-/* Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»РЅРѕРµ РЅР°Р·РІР°РЅРёРµ С„Р°Р№Р»Р° */
+/* Функция возвращает полное название файла */
 void get_ffile_name(char *fullname, char *name);
 
-/* Р¤СѓРЅРєС†РёСЏ РѕС‚РєСЂС‹РІР°РµС‚ Р‘Р” */
+/* Функция открывает БД */
 int openBD(KursBDClass *BDclass, char *path);
 
-/* Р¤СѓРЅРєС†РёСЏ СЃРѕСЂС‚РёСЂСѓРµС‚ Р‘Р” */
+/* Функция сортирует БД */
 int sort(KursBDClass *BDclass, char *field);
 
 /**
- * @fn void get_ffile_name(char *fullname, char *name)
- * @brief Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»РЅРѕРµ РЅР°Р·РІР°РЅРёРµ С„Р°Р№Р»Р°
- * @param fullname - СЃС‚СЂРѕРєР° РІС‹РІРѕРґР°
- * @param name  - РёРјСЏ С„Р°Р№Р»Р°
- */
-void get_ffile_name(char *fullname, char *name)
-{
-    /* РєРѕРїРёСЂСѓРµРј РїСѓС‚СЊ РґРѕ СЂР°Р±РѕС‡РµР№ РїР°РїРєРё */
-    strcpy(fullname, (char *) DBPATH);
-
-    /* РєРѕРїРёСЂСѓРµРј РёРјСЏ С„Р°Р№Р»Р° */
-    strcat(fullname, name);
-}
-
-/**
- * @fn int openBD(KursBDClass *BDclass, char *path)
- * @brief Р¤СѓРЅРєС†РёСЏ РѕС‚РєСЂС‹РІР°РµС‚ Р‘Р”
- * @param BDclass - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЌРєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР°
- * @param path - РїРѕР»РЅС‹Р№ РїСѓС‚СЊ РґРѕ С„Р°Р№Р»Р°
- * @return РљРѕРґ СѓРґР°С‡РЅРѕРіРѕ Р·Р°РІРµСЂС€РµРЅРёСЏ/РѕС€РёР±РєРё
- */
-int openBD(KursBDClass *BDclass, char *path)
-{
-    printf("Open DB: %s\n", path);
-    /* РѕС‚РєСЂС‹РІР°РµРј С„Р°Р№Р» */
-    if (BDclass->open(path) == END_OPEN_FAIL)
-    {
-        /* РЅРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» */
-        printf("[Fail]\n");
-        return 1;
-    }
-
-    /* С„Р°Р№Р» СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ */
-    printf("[OK]\n\n");
-    return 0;
-}
-
-/**
- * @fn int sort(KursBDClass *BDclass, char *field)
- * @brief Р¤СѓРЅРєС†РёСЏ СЃРѕСЂС‚РёСЂСѓРµС‚ Р‘Р”
- * @param BDclass - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЌРєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР°
- * @param field - РїРѕР»Рµ, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ РїСЂРѕРёСЃС…РѕРґРёС‚ СЃРѕСЂС‚РёСЂРѕРІРєР°
- * @return РљРѕРґ СѓРґР°С‡РЅРѕРіРѕ Р·Р°РІРµСЂС€РµРЅРёСЏ/РѕС€РёР±РєРё
- */
-int sort(KursBDClass *BDclass, char *field)
-{
-    printf("Cортировка по полю \"%s\"\n", field);
-
-    /* С„РѕСЂС‚РёСЂСѓРµРј Р‘Р” */
-    if (BDclass->sort(field) == END_NOT_FOUND)
-    {
-        /* СѓРєР°Р·Р°РЅРЅРѕРіРѕ РїРѕР»СЏ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ */
-        printf("[Fail]\n");
-        return 1;
-    }
-
-    /* Р‘Р” РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅР° */
-    printf("[OK]\n");
-    return 0;
-}
-
-/**
  * @fn int main()
- * @brief Р“Р»Р°РІРЅР°СЏ С„СѓРЅРєС†РёСЏ
- * @return РљРѕРґ РІРѕР·РІСЂР°С‚Р°
+ * @brief Главная функция
+ * @return Код возврата
  */
 int main()
 {
@@ -96,97 +34,160 @@ int main()
 	system("chcp 1251 > nul");
 	
     /* Создаем экземпляр класса */ 
-    KursBDClass mainBD, scnDB, sortBD, selectBD;
+//    KursBDClass mainBD, scnDB, sortBD, selectBD;
 
-    // РЅРµСѓРїРѕСЂСЏРґРѕС‡РµРЅРЅС‹Рµ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
-    char mpath[FILENAMELEN];
-    char spath[FILENAMELEN];
+//    // неупорядоченные базы данных
+//    char mpath[FILENAMELEN];
+//    char spath[FILENAMELEN];
 
-    // СЂР°Р±РѕС‡РёРµ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
-    char sopath[FILENAMELEN];
-    char so2path[FILENAMELEN];
-    char selpath[FILENAMELEN];
+//    // рабочие базы данных
+//    char sopath[FILENAMELEN];
+//    char so2path[FILENAMELEN];
+//    char selpath[FILENAMELEN];
 
-    // СЃРѕР·РґР°С‘Рј РїСѓС‚Рё РґР»СЏ РєР°Р¶РґРѕР№ Р‘Р”
-    get_ffile_name(mpath, (char *) MAINDBNAME);
-    get_ffile_name(spath, (char *) SECONDDBNAME);
-    get_ffile_name(selpath, (char *) SELECTBDNAME);
-    get_ffile_name(sopath, (char *) SORTBDNAME);
-    get_ffile_name(so2path, (char *) SORTSCNBDNAME);
-
-
-    printf("Exercise 1:\n\n\n");
-
-    char *sort_field = (char *) "fname";
-    // РѕС‚РєСЂС‹РІР°РµРј Р±Р°Р·Сѓ РґР°РЅРЅС‹С…
-    openBD(&mainBD, mpath);
-    openBD(&scnDB, spath);
-
-    // СЃРѕСЂС‚РёСЂСѓРµРј 1 Р‘Р”
-    sort(&mainBD, sort_field);
-    mainBD.write_buffer(sopath);
-    printf("Result in file: %s\n\n\n", sopath);
-    mainBD.close();
-
-    // СЃРѕСЂС‚РёСЂСѓРµРј 2 Р‘Р”
-    sort(&scnDB, sort_field);
-    scnDB.write_buffer(so2path);
-    printf("Result in file: %s\n\n\n", so2path);
-    scnDB.close();
+//    // создаём пути для каждой БД
+//    get_ffile_name(mpath, (char *) MAINDBNAME);
+//    get_ffile_name(spath, (char *) SECONDDBNAME);
+//    get_ffile_name(selpath, (char *) SELECTBDNAME);
+//    get_ffile_name(sopath, (char *) SORTBDNAME);
+//    get_ffile_name(so2path, (char *) SORTSCNBDNAME);
 
 
-    // СЃРѕРµРґРёРЅСЏРµРј Р‘Р”
-    openBD(&sortBD, sopath);
-    printf("Merges on the field: \"%s\"\n\n", sort_field);
-    sortBD.merge(so2path, sort_field);
-    sortBD.write_buffer();
-    printf("Result in file: %s\n\n\n", sopath);
-    sortBD.close();
+//    printf("Exercise 1:\n\n\n");
+
+//    char *sort_field = (char *) "fname";
+//    // открываем базу данных
+//    openBD(&mainBD, mpath);
+//    openBD(&scnDB, spath);
+
+//    // сортируем 1 БД
+//    sort(&mainBD, sort_field);
+//    mainBD.write_buffer(sopath);
+//    printf("Result in file: %s\n\n\n", sopath);
+//    mainBD.close();
+
+//    // сортируем 2 БД
+//    sort(&scnDB, sort_field);
+//    scnDB.write_buffer(so2path);
+//    printf("Result in file: %s\n\n\n", so2path);
+//    scnDB.close();
 
 
-    printf("\nExercise 2:\n\n\n");
-
-    openBD(&selectBD, mpath);
-
-    char *selyear = (char *) "years";
-    char *selfname = (char *) "fname";
-    char *selpos = (char *) "position";
-    int year = 30;
-    char *fname = (char *) "Мария";
-    char *pos = (char *) "Администратор";
-
-    // Р’С‹РїРѕР»РЅСЏРµРј РїРµСЂРІСѓСЋ РІС‹Р±РѕСЂРєСѓ
-    printf("Select on the field \"%s\" with the value %d\n", selyear, year);
-    selectBD.select(selyear, year);
-    selectBD.write_buffer(selpath);
-
-    // Р·Р°РєСЂС‹РІР°РµРј С„Р°Р№Р» Р±Р°Р·С‹ РґР°РЅРЅС‹С…
-    selectBD.close();
+//    // соединяем БД
+//    openBD(&sortBD, sopath);
+//    printf("Merges on the field: \"%s\"\n\n", sort_field);
+//    sortBD.merge(so2path, sort_field);
+//    sortBD.write_buffer();
+//    printf("Result in file: %s\n\n\n", sopath);
+//    sortBD.close();
 
 
-    openBD(&selectBD, selpath);
+//    printf("\nExercise 2:\n\n\n");
 
-    // Р’С‹РїРѕР»РЅСЏРµРј РІС‹Р±РѕСЂРєСѓ
-    printf("Select on the field \"%s\" with the value %s\n", selfname, fname);
-    selectBD.select(selfname, fname);
-    selectBD.write_buffer();
+//    openBD(&selectBD, mpath);
 
-    selectBD.close();
+//    char *selyear = (char *) "years";
+//    char *selfname = (char *) "fname";
+//    char *selpos = (char *) "position";
+//    int year = 30;
+//    char *fname = (char *) "Мария";
+//    char *pos = (char *) "Администратор"
+//    // Выполняем первую выборку
+//    printf("Select on the field \"%s\" with the value %d\n", selyear, year);
+//    selectBD.select(selyear, year);
+//    selectBD.write_buffer(selpath);
 
-    openBD(&selectBD, selpath);
-    // Р’С‹РїРѕР»РЅСЏРµРј РІС‹Р±РѕСЂРєСѓ
-    printf("Select on the field \"%s\" with the value %s\n", selpos, pos);
-    selectBD.select(selpos, pos);
-    selectBD.write_buffer();
+//    // закрываем файл базы данных
+//    selectBD.close();
 
-    printf("Result in the file: %s\n\n", selpath);
 
-    // Р·Р°РєСЂС‹РІР°РµРј С„Р°Р№Р» Р±Р°Р·С‹ РґР°РЅРЅС‹С…
-    selectBD.close();
+//    openBD(&selectBD, selpath);
+
+//    // Выполняем выборку
+//    printf("Select on the field \"%s\" with the value %s\n", selfname, fname);
+//    selectBD.select(selfname, fname);
+//    selectBD.write_buffer();
+
+//    selectBD.close();
+
+//    openBD(&selectBD, selpath);
+//    // Выполняем выборку
+//    printf("Select on the field \"%s\" with the value %s\n", selpos, pos);
+//    selectBD.select(selpos, pos);
+//    selectBD.write_buffer();
+
+//    printf("Result in the file: %s\n\n", selpath);
+
+//    // закрываем файл базы данных
+//    selectBD.close();
 
 	/* Остановка программы */
 	system("pause"); 
 
     return 0;
 }
+
+
+/**
+ * @fn void get_ffile_name(char *fullname, char *name)
+ * @brief Функция возвращает полное название файла
+ * @param fullname - строка вывода
+ * @param name  - имя файла
+ */
+void get_ffile_name(char *fullname, char *name)
+{
+//    /* копируем путь до рабочей папки */
+//    strcpy(fullname, (char *) DBPATH);
+
+//    /* копируем имя файла */
+//    strcat(fullname, name);
+}
+
+/**
+ * @fn int openBD(KursBDClass *BDclass, char *path)
+ * @brief Функция открывает БД
+ * @param BDclass - указатель на экземпляр класса
+ * @param path - полный путь до файла
+ * @return Код удачного завершения/ошибки
+ */
+int openBD(KursBDClass *BDclass, char *path)
+{
+//    printf("Open DB: %s\n", path);
+//    /* открываем файл */
+//    if (BDclass->open(path) == END_OPEN_FAIL)
+//    {
+//        /* не удалось открыть файл */
+//        printf("[Fail]\n");
+//        return 1;
+//    }
+
+//    /* файл удалось открыть */
+//    printf("[OK]\n\n");
+    return 0;
+}
+
+/**
+ * @fn int sort(KursBDClass *BDclass, char *field)
+ * @brief Функция сортирует БД
+ * @param BDclass - указатель на экземпляр класса
+ * @param field - поле, по которому происходит сортировка
+ * @return Код удачного завершения/ошибки
+ */
+int sort(KursBDClass *BDclass, char *field)
+{
+    printf("Cортировка по полю %s\"\n", field);
+
+//    /* фортируем БД */
+//    if (BDclass->sort(field) == END_NOT_FOUND)
+//    {
+//        /* указанного поля не существует */
+//        printf("[Fail]\n");
+//        return 1;
+//    }
+
+//    /* БД отсортирована */
+//    printf("[OK]\n");
+    return 0;
+}
+
 

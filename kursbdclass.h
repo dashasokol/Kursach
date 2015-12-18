@@ -1,91 +1,79 @@
 #ifndef KURSBDCLASS_H
 #define KURSBDCLASS_H
 
-#define NAMELEN 50          // РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅРЅР° РёРјРµРЅРё Рё С„Р°РјРёР»РёРё
-#define POSLEN 100          // РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅРЅР° РЅР°Р·РІР°РЅРёСЏ РґРѕР»Р¶РЅРѕСЃС‚Рё
-#define TABLELINES 100      // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїРёСЃРµР№ РІ С‚Р°Р±Р»РёС†Рµ
-#define LINELEN 255         // РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅРЅР° СЃС‚СЂРѕРєРё
-#define SEPARATOR ";"       // СЃРёРјРІРѕР» СЂР°Р·РґРµР»РёС‚РµР»СЊ РїРѕР»РµР№
-#define STRING_END "\""     // СЃРёРјРІРѕР» РѕРіСЂР°РЅРёС‡РёС‚РµР»СЊ СЃС‚СЂРѕРєРѕРІС‹С… Р·РЅР°С‡РµРЅРёР№
-#define MAX_COLUMNS 5       // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РєРѕР»РѕРЅРѕРє РІ С‚Р°Р±Р»РёС†Рµ
-#define DESCRIPT "#ID|FIRSTNAME|LASTNAME|YEARS|POSITION\n"  // РѕРїРёСЃР°РЅРёРµ С‚Р°Р±Р»РёС†С‹
+#define NAMELEN 50          // максимальная длинна имени и фамилии
+#define POSLEN 100          // максимальная длинна названия должности
+#define TABLELINES 100      // максимальное количество записей в таблице
+#define LINELEN 255         // максимальная длинна строки
+#define SYM_SEPARATOR ";"       // символ разделитель полей
+#define SYM_STRING_END "\""     // символ ограничитель строковых значений
+#define SYM_HEADER "#"
+#define SYM_HEADER_SEPARATOR "|"
+#define DESCRIPT "#ID|FIRSTNAME|LASTNAME|YEARS|POSITION\n"  // описание таблицы
+#define MAXLEN 10
 
-/* СЃС‚СЂСѓРєС‚СѓСЂР° С‚Р°Р±Р»РёС†С‹ */
+/* структура таблицы */
 struct table
 {
-    unsigned int id;        // РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
-    char fname[NAMELEN];    // РёРјСЏ
-    char lname[NAMELEN];    // С„Р°РјРёР»РёСЏ
-    unsigned int years;     // РєРѕР»РёС‡РµСЃС‚РІРѕ Р»РµС‚
-    char position[POSLEN];  // РґРѕР»Р¶РЅРѕСЃС‚СЊ
+    unsigned int number; // идентификатор
+    std::string field;    // имя
+    std::string value;    // фамилия
 };
 
-/* РІРѕР·РІСЂР°С‰Р°РµРјС‹Рµ Р·РЅР°С‡РµРЅРёСЏ */
+/* возвращаемые значения */
 enum
 {
-    END_WRONG_FORMAT = -2,  // РЅРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚
-    END_NOT_FOUND,          // РїРѕРёСЃРє Р·Р°РІРµСЂС€РёР»СЃСЏ РЅРµСѓРґР°С‡РµР№
-    END_OK,                 // С„СѓРЅРєС†РёСЏ Р·Р°РІРµСЂС€РёР»Р°СЃСЊ Р±РµР· РѕС€РёР±РєРё
-    END_EXIT,               // С„СѓРЅРєС†РёСЏ Р·Р°РІРµСЂС€РёР»Р°СЃСЊ, РѕР±СЂР°Р±РѕС‚РєР° РЅРµ С‚СЂРµСѓР±РµС‚СЃСЏ
-    END_OPEN_FAIL           // РїСЂРѕР±Р»РµРјР° СЃ РѕС‚РєСЂС‹С‚РёРµРј С„Р°Р№Р»Р°
+    END_WRONG_FORMAT = -2,  // неверный формат
+    END_NOT_FOUND,          // поиск завершился неудачей
+    END_OK,                 // функция завершилась без ошибки
+    END_EXIT,               // функция завершилась, обработка не треубется
+    END_OPEN_FAIL           // проблема с открытием файла
 };
 
 /*
- * РљР»Р°СЃСЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р‘Р”
+ * Класс для работы с БД
  */
 class KursBDClass
 {
-    struct table tb[TABLELINES];                    // СЃС‚СЂСѓРєС‚СѓСЂР° СЃ РґР°РЅРЅС‹РјРё
-    char string_for_write[LINELEN * TABLELINES];    // СЃС‚СЂРѕРєР° РІС‹РІРѕРґР°
-    unsigned int order_len;                         // РґР»РёРЅРЅР° РјР°СЃСЃРёРІР°, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ
-                                                    // РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РїРѕСЂСЏРґРѕРє РІС‹РІРѕРґР°
-    int order[TABLELINES];                          // РјР°СЃСЃРёРІ, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ
-                                                    // РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РїРѕСЂСЏРґРѕРє РІС‹РІРѕРґР°
-    unsigned int table_length;                      // РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїРёСЃРµР№ РІ Р‘Р”
-    FILE *bd_out_file;                              // РґРµСЃРєСЂРёРїС‚РѕСЂ С„Р°Р№Р»Р° Р‘Р”
-    int parse(char *string_to_parse,
-              struct table *data_table,
-              unsigned int *tb_len);                // Р¤СѓРЅРєС†РёСЏ РѕР±СЂР°Р±РѕС‚РєРё СЃС‚СЂРѕРєРё
-    int getValue(unsigned int *var, char *val);     // Р¤СѓРЅРєС†РёСЏ, РїРѕР»СѓС‡Р°СЋС‰Р°СЏ С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
-    int getValue(char *var, char *val);             // Р¤СѓРЅРєС†РёСЏ, РїРѕР»СѓС‡Р°СЋС‰Р°СЏ СЃС‚СЂРѕРєРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ
-    int clean_db(FILE *bd);                         // Р¤СѓРЅРєС†РёСЏ РѕС‚С‡РёС‰Р°РµС‚ С„Р°Р№Р» Р‘Р”
-    int add_to_bd(FILE *bd, char *string);          // РћР±РѕР»РѕС‡РєР° РґР»СЏ Р·Р°РїРёСЃРё РґР°РЅРЅС‹С… РІ С„Р°Р№Р» Р‘Р”
-    void valueInsert(char *string, char *value);    // Р¤СѓРЅРєС†РёСЏ РІСЃС‚Р°РІР»СЏРµС‚ РѕС‡РµСЂРµРґРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РІ СЃС‚СЂРѕРєСѓ РІС‹РІРѕРґР°
-    void stringInsert(char *string,
-                      struct table insert_value);   // Р¤СѓРЅРєС†РёСЏ РІСЃС‚Р°РІР»СЏРµС‚ СЃС‚СЂРѕРєСѓ СЃРѕРґРµСЂР¶Р°С‰СѓСЋ РґР°РЅРЅС‹Рµ
-                                                    // РѕРґРЅРѕР№ Р·Р°РїРёСЃРё РёР· Р‘Р” РІ СЃС‚СЂРѕРєСѓ РІС‹РІРѕРґР°
-    int sort_table(int *ord, char *field,
-                   struct table *data_table,
-                   unsigned int tb_len);            // Р¤СѓРЅРєС†РёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё РѕРґРЅРѕРіРѕ РјР°СЃСЃРёРІР° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ
-                                                    // Р·РЅР°С‡РµРЅРёР№ РґСЂСѓРіРѕРіРѕ
-    FILE *open_and_parse(char *BD_file_name,
-                         struct table *data_table,
-                         unsigned int *tb_len);     // Р¤СѓРЅРєС†РёСЏ РѕС‚РєСЂС‹РІР°РµС‚ Рё С‡РёС‚Р°РµС‚ Р‘Р” РёР· С„Р°Р№Р»Р°
-    int insert_and_sort(struct table *insert_value,
-                         unsigned int insert_value_len,
-                         char *field);              // Р¤СѓРЅРєС†РёСЏ РєРѕС‚РѕСЂР°СЏ РґРѕР±Р°РІР»СЏРµС‚ Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Сѓ Рё
-                                                    // СЃРѕСЂС‚РёСЂСѓРµС‚ РµС‘
-    void get_order_string();                        // Р¤СѓРЅРєС†РёСЏ Р·Р°РїРёСЃРё РґР°РЅРЅС‹С… РІ СЃС‚СЂРѕРєСѓ РІС‹РІРѕРґР°
-    void order_clear(unsigned int length);          // РћС‚С‡РёСЃС‚РєР° РјР°СЃСЃРёРІР°, РїРѕ РєС‚РѕСЂРѕРјСѓ РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РїРѕСЂСЏРґРѕРє
+    struct table tb[LINELEN * TABLELINES];                    // структура с данными
+    std::string string_for_write;    // строка вывода
+    std::string table_header[MAXLEN];                       // шапка таблицы
+    unsigned int header_col;
+    int sort_field;
+    unsigned int order_len;                         // длинна массива, по которому
+                                                    // определяется порядок вывода
+    unsigned int order[TABLELINES];                          // массив, по которому
+                                                    // определяется порядок вывода
+    unsigned int table_length;                      // количество записей в БД
+    FILE *bd_out_file;                              // дескриптор файла БД
+    int getHeader(std::string string_to_parse);
+    int parse(std::string string_to_parse);                // Функция обработки строки
+    int getValue(std::string *var, std::string val);             // Функция, получающая строковое значение
+    int clean_db(FILE *bd);                         // Функция отчищает файл БД
+    void stringInsert(unsigned int number);   // Функция вставляет строку содержащую данные
+                                                    // одной записи из БД в строку вывода
+    void get_order_string();                        // Функция записи данных в строку вывода
+    void order_clear(unsigned int length);          // Отчистка массива, по кторому определяется порядок
+    int add_to_bd(FILE *bd, const char *string);          // Оболочка для записи данных в файл БД
+    int isOrder(unsigned int number);
+    int sort_table(std::string field);            // Функция сортировки одного массива относительно
+                                                    // значений другого
 public:
-    KursBDClass();                                  // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
-    int open(char *BD_file_name);                   // РћР±РѕР»РѕС‡РєР° РґР»СЏ С„СѓРЅРєС†РёРё open_and_parse
-    void close();                                   // Р¤СѓРЅРєС†РёСЏ Р·Р°РєСЂС‹С‚РёСЏ Р‘Р”
-    void select(char *field, unsigned int value);   // Р¤СѓРЅРєС†РёСЏ РёС‰РµС‚ Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Рµ РїРѕ РїРѕСЃР»СЋ, СЃРѕРґРµСЂР¶Р°С‰РµРјСѓ
-                                                    // С†РµР»РѕС‡РёСЃР»РµРЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
-    void select(char *field, char *value);          // Р¤СѓРЅРєС†РёСЏ РёС‰РµС‚ Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Рµ РїРѕ РїРѕСЃР»СЋ, СЃРѕРґРµСЂР¶Р°С‰РµРјСѓ
-                                                    // СЃС‚СЂРѕРєРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
-    void insert(struct table insert_value);         // Р¤СѓРЅРєС†РёСЏ РІСЃС‚Р°РІР»СЏРµС‚ РЅРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РІ СЃС‚СЂРѕРєСѓ РІС‹РІРѕРґР°
-    void del(char *field, unsigned int value);      // РЈРґР°Р»РµРЅРёРµ РІСЃРµС… Р·Р°РїРёСЃРµР№, РёР· РїРѕР»СЏ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС…
-                                                    // СѓРєР°Р·Р°РЅРЅРѕРјСѓ С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ
-    void del(char *field, char *value);             // РЈРґР°Р»РµРЅРёРµ РІСЃРµС… Р·Р°РїРёСЃРµР№, РёР· РїРѕР»СЏ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС…
-                                                    // СЃС‚СЂРѕРєРѕРІРѕРјСѓ СѓРєР°Р·Р°РЅРЅРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ
-    int sort(char *field);                          // РћР±РѕР»РѕС‡РєР° РґР»СЏ С„СѓРЅРєС†РёРё СЃРѕСЂС‚РёСЂРѕРІРєРё РїРѕ РїРѕР»СЋ
-    int insert_sort(struct table insert_value,
-                     char *field);                  // Р’СЃС‚Р°РІРєР° РІ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅСѓСЋ Р‘Р”
-    int merge(char *if_DB, char *field);            // Р”РѕР±Р°РІР»РµРЅРёРµ РґР°РЅРЅС‹С… РёР· РґСЂСѓРіРѕР№ Р‘Р” Рё РїРѕСЃР»РµРґСѓСЋС‰Р°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР°
-    int write_buffer(char *s_file_name);            // Р¤СѓРЅРєС†РёСЏ Р·Р°РїРёСЃС‹РІР°РµС‚ СЃС‚СЂРѕРєСѓ РІС‹РІРѕРґР° РІ СѓРєР°Р·Р°РЅРЅС‹Р№ С„Р°Р№Р»
-    int write_buffer();                             // Р¤СѓРЅРєС†РёСЏ Р·Р°РїРёСЃС‹РІР°РµС‚ СЃС‚СЂРѕРєСѓ РІС‹РІРѕРґР° РІ РѕСЃРЅРѕРІРЅРѕР№ С„Р°Р№Р»
+    KursBDClass();                                  // Конструктор
+    ~KursBDClass();                                 // Деструктор
+    int open(std::string BD_file_name);                   // Оболочка для функции open_and_parse
+    void close();                                   // Функция закрытия БД
+    int write_buffer(std::string s_file_name);            // Функция записывает строку вывода в указанный файл
+    int write_buffer();                             // Функция записывает строку вывода в основной файл
+    void select(std::string field,
+                std::string value);          // Функция ищет записи в таблице по послю, содержащему
+                                                    // строковые значения
+    void add(std::string value);         // Функция вставляет новое значение в строку вывода
+    void del(std::string field,             // Удаление всех записей, из поля соответствуюх
+             std::string value);             // строковому указанному значению
+    int sort(std::string field);                          // Оболочка для функции сортировки по полю
+    void insert(std::string value);                  // Вставка в отсортированную БД
 };
 
 #endif // KURSBDCLASS_H
+
