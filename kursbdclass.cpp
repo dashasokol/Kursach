@@ -90,7 +90,7 @@ int KursBDClass::open(std::string BD_file_name)
             if (parse(string_to_parse) == END_WRONG_FORMAT)
             {
                 /* строка имеет неправильный формат */
-                fprintf(stderr, "Line %d: Wrong string format\n", str_num);
+                fprintf(stderr, "—трока %d: Ќеправильный формат \n", str_num);
             }
 
             /* увеличиваем номер строки */
@@ -433,7 +433,7 @@ int KursBDClass::sort_table(std::string field)
     else
     {
         /* им€ пол€ не найдено */
-        fprintf(stderr, "Wrong field name %s\n", field.c_str());
+        fprintf(stderr, "Ќеверное им€ пол€ %s\n", field.c_str());
         return END_NOT_FOUND;
     }
 
