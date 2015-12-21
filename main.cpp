@@ -94,6 +94,9 @@ int main()
     cout << "Сортировка по полю: " << field3 << "; со занчением: " << value3 << "\n";
     selBD.next_select(field3, value3);
     selBD.write_buffer(selpath);
+    
+    selBD.close();
+    selBD.~KursBDClass();
 
     /* Остановка программы */
     system("pause");
