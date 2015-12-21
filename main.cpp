@@ -122,7 +122,7 @@ int main()
 //    selectBD.close();
 
 	/* Остановка программы */
-	system("pause"); 
+    system("pause");
 
     return 0;
 }

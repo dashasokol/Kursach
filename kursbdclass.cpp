@@ -21,9 +21,9 @@ KursBDClass::~KursBDClass()
     header_col = 0;
     sort_field = -1;
 
-    memset(tb, 0, sizeof(tb));
-    memset(table_header, 0, sizeof(table_header));
-    memset(order, 0, sizeof(order));
+//    memset(tb, 0, sizeof(tb));
+//    memset(table_header, 0, sizeof(table_header));
+//    memset(order, 0, sizeof(order));
 }
 
 int KursBDClass::getHeader(std::string string_to_parse)
@@ -32,18 +32,20 @@ int KursBDClass::getHeader(std::string string_to_parse)
 
     string_to_parse = string_to_parse.substr(1, string_to_parse.size() - 1);
 
-    while ((h_sep_pos = string_to_parse.find(SYM_HEADER_SEPARATOR)) > 0 &&
-            h_sep_pos < string_to_parse.size())
+    while ((h_sep_pos = string_to_parse.find(SYM_HEADER_SEPARATOR)) < string_to_parse.size())
     {
         table_header[header_col++] = string_to_parse.substr(0, h_sep_pos);
 
-        string_to_parse = string_to_parse.substr(h_sep_pos, string_to_parse.size() - (h_sep_pos + 1));
+        string_to_parse = string_to_parse.substr(h_sep_pos + 1, string_to_parse.size() - h_sep_pos);
     }
 
     if (string_to_parse.size() == 0)
         return END_EXIT;
 
-    table_header[header_col++] = string_to_parse.substr(0, string_to_parse.size());
+    if ((h_sep_pos = string_to_parse.find("\n")) > string_to_parse.size())
+        h_sep_pos = string_to_parse.size();
+
+    table_header[header_col++] = string_to_parse.substr(0, h_sep_pos);
 
     return END_OK;
 }
@@ -120,7 +122,6 @@ void KursBDClass::close()
  */
 int KursBDClass::parse(std::string string_to_parse)
 {
-    unsigned int pos = 0; // позиция для чтения
     unsigned int i = 0;
     unsigned int el_num;
 
@@ -132,8 +133,7 @@ int KursBDClass::parse(std::string string_to_parse)
         tb[el_num].field = table_header[i];
 
         /* извлекаем значение */
-        if ((pos = getValue(&tb[el_num].value, string_to_parse)) != (unsigned int) END_WRONG_FORMAT)
-            string_to_parse = string_to_parse.substr(pos, string_to_parse.size() - pos);
+        getValue(&tb[el_num].value, &string_to_parse);
     }
 
     table_length++;
@@ -148,33 +148,21 @@ int KursBDClass::parse(std::string string_to_parse)
  * @param val - строка для парсинга
  * @return Код удачного завершения / ошибки
  */
-int KursBDClass::getValue(std::string *var, std::string val)
+void KursBDClass::getValue(std::string *var, std::string *val)
 {
-    int pos;    // позиция для чтения
+    unsigned int pos;    // позиция для чтения
 
     /* поиск символа разделителя */
-    if (val.find(SYM_STRING_END) == 0)
-    {
-        /* найдена строка с кавычками */
-        val = val.substr(1, val.size()-1);
-        pos = val.find(SYM_STRING_END);
-    }
+    if ((pos = val->find(SYM_SEPARATOR)) > val->size())
+        if (val->find("\n") < val->size())
+            *var = val->substr(0, val->size() - 1);
+        else
+            *var = *val;
     else
-        /* строка без кавычек */
-        pos = val.find(SYM_STRING_END);
-
-    /* если найдено пустое значение */
-    if (pos <= 0)
     {
-        /* если пустое значение, считать, что значение "\0" */
-        *var = "";
-        return END_OK;
+        *var = val->substr(0, pos);
+        *val = val->substr(pos+1, val->size() - pos);
     }
-
-    /* найдено не пустое значение */
-    *var = val.substr(1, pos);
-
-    return pos;
 }
 
 /**
@@ -202,7 +190,7 @@ void KursBDClass::stringInsert(unsigned int number)
     for (i = 0; i < header_col; i++)
     {
         string_for_write += tb[(number * header_col + i)].value;
-        string_for_write += i == header_col-1 ? ";" : "\n";
+        string_for_write += i == header_col-1 ? "\n" : ";";
     }
 }
 
@@ -415,7 +403,7 @@ int KursBDClass::sort(std::string field)
 int KursBDClass::sort_table(std::string field)
 {
     unsigned int i; // счетчик
-    char *values[TABLELINES];
+    const char *values[TABLELINES];
 
     /* обнуляем массив по которому определяется порядок вывода */
     for (i = 0; i < header_col; i++)
@@ -425,7 +413,7 @@ int KursBDClass::sort_table(std::string field)
     if (sort_field >= 0)
     {
         for (i = 0; i < table_length; i++)
-            strcpy(values[i], tb[i*header_col+sort_field].value.c_str());
+            values[i] = tb[i*header_col+sort_field].value.c_str();
 
         /* сортируем массив */
         qsort_dmas((int *) order, values, table_length-1, T_CHAR);

@@ -1,15 +1,11 @@
 #ifndef KURSBDCLASS_H
 #define KURSBDCLASS_H
 
-#define NAMELEN 50          // максимальная длинна имени и фамилии
-#define POSLEN 100          // максимальная длинна названия должности
-#define TABLELINES 100      // максимальное количество записей в таблице
+#define TABLELINES 50      // максимальное количество записей в таблице
 #define LINELEN 255         // максимальная длинна строки
 #define SYM_SEPARATOR ";"       // символ разделитель полей
-#define SYM_STRING_END "\""     // символ ограничитель строковых значений
 #define SYM_HEADER "#"
 #define SYM_HEADER_SEPARATOR "|"
-#define DESCRIPT "#ID|FIRSTNAME|LASTNAME|YEARS|POSITION\n"  // описание таблицы
 #define MAXLEN 10
 
 /* структура таблицы */
@@ -35,7 +31,7 @@ enum
  */
 class KursBDClass
 {
-    struct table tb[LINELEN * TABLELINES];                    // структура с данными
+    struct table tb[MAXLEN * TABLELINES];                    // структура с данными
     std::string string_for_write;    // строка вывода
     std::string table_header[MAXLEN];                       // шапка таблицы
     unsigned int header_col;
@@ -48,7 +44,7 @@ class KursBDClass
     FILE *bd_out_file;                              // дескриптор файла БД
     int getHeader(std::string string_to_parse);
     int parse(std::string string_to_parse);                // Функция обработки строки
-    int getValue(std::string *var, std::string val);             // Функция, получающая строковое значение
+    void getValue(std::string *var, std::string *val);             // Функция, получающая строковое значение
     int clean_db(FILE *bd);                         // Функция отчищает файл БД
     void stringInsert(unsigned int number);   // Функция вставляет строку содержащую данные
                                                     // одной записи из БД в строку вывода
