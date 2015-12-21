@@ -11,7 +11,7 @@
 
 /**
  * @fn int fmwrite(FILE * file, void * Data, int size)
- * @brief Функция записи сиволов в конкретную позицию файла
+ * @brief Функция записи символов в конкретную позицию файла
  * @param file - Указатель на файл
  * @param Data - Указатель на блок данных
  * @param size - Размер блока данных
@@ -32,7 +32,7 @@ int fmwrite(FILE * file, const void * Data, int size)
 
 /**
  * @fn int fmclean(FILE * file, int size, int from)
- * @brief Функция удаления сиволов с конкретной позиции файла
+ * @brief Функция удаления символов с конкретной позиции файла
  * @param file - Указатель на файл
  * @param size - Размер блока данных (если -1 - отчистить весь файл)
  * @param from - Смещение относительно начала файла

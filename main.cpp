@@ -10,8 +10,7 @@ using namespace std;
 #define MAINDBNAME "KurBD"          // основная база
 #define SECONDDBNAME "ScnBD"        // вторая база
 #define SELECTBDNAME "SelectBD"     // файл для вывода команды select
-#define SORTBDNAME "SortBD"         // файл для вывода сортировки 1
-#define SORTSCNBDNAME "SortscnBD"   // файл для вывода сортировки 2
+#define SORTBDNAME "SortBD"         // файл для вывода сортировки
 
 /* Функция открывает БД */
 int openBD(KursBDClass *BDclass, string path);
@@ -26,102 +25,77 @@ int sort(KursBDClass *BDclass, string field);
  */
 int main()
 {
+    unsigned int i; // счетчик
+
     /* Смена кодировки на cp1251 */
 	system("chcp 1251 > nul");
 	
     /* Создаем экземпляр класса */ 
-    KursBDClass mainBD, scnDB, sortBD, selectBD;
+    KursBDClass mainBD, scnDB, selBD;
 
-
-	// неупорядоченные базы данных
+    /* неупорядоченные базы данных */
 	string mpath = DBPATH;
 	mpath += MAINDBNAME;
 	
 	string spath = DBPATH;
 	spath += SECONDDBNAME;
 	
-	// рабочие базы данных
+    /* рабочие базы данных */
 	string selpath = DBPATH;
 	selpath += SELECTBDNAME;
 	
 	string sopath = DBPATH; 
 	sopath += SORTBDNAME;
 	
-	string so2path = DBPATH; 
-	so2path += SORTSCNBDNAME;
+    cout << "Задание 1:\n\n\n";
 
-
-	cout << "Exercise 1:\n\n\n";
-
-	string sort_field = "FIRSTNAME";
+    string sort_field = "FIRSTNAME"; // поле для сортировки
 	
-    // открываем базу данных
+    /* открываем базу данных */
     openBD(&mainBD, mpath);
     openBD(&scnDB, spath);
 
-    // сортируем 1 БД
-    sort(&mainBD, sort_field);
-    mainBD.write_buffer(sopath);
-    cout << "Результат в файле: " << sopath << "\n\n\n";
-    mainBD.close();
+    /* Соединяем и сортируем базы данных */
+    cout << "Соедниение баз данных\n";
+    for (i = 0; i < scnDB.get_length(); i++)
+        mainBD.add(scnDB.get_entry(i));
 
-    // сортируем 2 БД
-    sort(&scnDB, sort_field);
-    scnDB.write_buffer(so2path);
-    cout << "Результат в файле: " << so2path << "\n\n\n";
+    cout << "Сортировка по полю" << sort_field << "\n";
+    mainBD.sort(sort_field);
+    mainBD.write_buffer(sopath);
+
+
+    cout << "Результат в файле: " << sopath << "\n\n\n";
     scnDB.close();
     scnDB.~KursBDClass();
+    mainBD.close();
+    mainBD.~KursBDClass();
 
 
-//    // соединяем БД
-//    openBD(&sortBD, sopath);
-//    printf("Merges on the field: \"%s\"\n\n", sort_field);
-//    sortBD.merge(so2path, sort_field);
-//    sortBD.write_buffer();
-//    printf("Result in file: %s\n\n\n", sopath);
-//    sortBD.close();
+    cout << "Задание 2:\n\n\n";
+
+    openBD(&selBD, mpath);
+
+    string field1 = "YEARS";
+    string value1 = "30";
+
+    string field2 = "FIRSTNAME";
+    string value2 = "Maria";
+
+    string field3 = "POSITION";
+    string value3 = "Admin";
 
 
-//    printf("\nExercise 2:\n\n\n");
+    /* Выполняем первую выборку */
+    cout << "Сортировка по полю: " << field1 << "; со занчением: " << value1 << "\n";
+    selBD.select(field1, value1);
+    cout << "Сортировка по полю: " << field2 << "; со занчением: " << value2 << "\n";
+    selBD.next_select(field2, value2);
+    cout << "Сортировка по полю: " << field3 << "; со занчением: " << value3 << "\n";
+    selBD.next_select(field3, value3);
+    selBD.write_buffer(selpath);
 
-//    openBD(&selectBD, mpath);
-
-//    char *selyear = (char *) "years";
-//    char *selfname = (char *) "fname";
-//    char *selpos = (char *) "position";
-//    int year = 30;
-//    char *fname = (char *) "Мария";
-//    char *pos = (char *) "Администратор"
-//    // Выполняем первую выборку
-//    printf("Select on the field \"%s\" with the value %d\n", selyear, year);
-//    selectBD.select(selyear, year);
-//    selectBD.write_buffer(selpath);
-
-//    // закрываем файл базы данных
-//    selectBD.close();
-
-
-//    openBD(&selectBD, selpath);
-
-//    // Выполняем выборку
-//    printf("Select on the field \"%s\" with the value %s\n", selfname, fname);
-//    selectBD.select(selfname, fname);
-//    selectBD.write_buffer();
-
-//    selectBD.close();
-
-//    openBD(&selectBD, selpath);
-//    // Выполняем выборку
-//    printf("Select on the field \"%s\" with the value %s\n", selpos, pos);
-//    selectBD.select(selpos, pos);
-//    selectBD.write_buffer();
-
-//    printf("Result in the file: %s\n\n", selpath);
-
-//    // закрываем файл базы данных
-//    selectBD.close();
-
-	/* Остановка программы */
+    /* Остановка программы */
     system("pause");
 
     return 0;
@@ -162,7 +136,7 @@ int sort(KursBDClass *BDclass, string field)
 {
     cout << "Cортировка по полю " << field << "\n";
 
-    /* фортируем БД */
+    /* сортируем БД */
     if (BDclass->sort(field) == END_NOT_FOUND)
     {
         /* указанного поля не существует */
