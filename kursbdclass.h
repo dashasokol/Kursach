@@ -43,7 +43,6 @@ class KursBDClass
     unsigned int table_length;                          // количество записей в БД
     FILE *bd_out_file;                                  // дескриптор файла БД
     int getHeader(std::string string_to_parse);         // Функция получает шапку таблицы
-    int parse(std::string string_to_parse);             // Функция обработки строки
     void getValue(std::string *var, std::string *val);  // Функция, получающая строковое значение
     int clean_db(FILE *bd);                             // Функция отчищает файл БД
     void stringInsert(unsigned int number);             // Функция вставляет строку содержащую данные
@@ -65,7 +64,7 @@ public:
                 std::string value);                     // строковые значения
     void next_select(std::string field,                 // Функция продолжает искать записи в таблице
                      std::string value);                // по полю, содержащему значения
-    void add(std::string value);                        // Функция вставляет новое значение в БД
+    int add(std::string string_to_parse);              // Функция вставляет новое значение в БД
     void del(std::string field,                         // Удаление всех записей, из поля соответствуюх
              std::string value);                        // указанному значению
     int sort(std::string field);                        // Оболочка для функции сортировки по полю

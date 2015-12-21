@@ -104,7 +104,7 @@ int KursBDClass::open(std::string BD_file_name)
                 return END_WRONG_FORMAT;
 
             /* парсим строку */
-            if (parse(string_to_parse) == END_WRONG_FORMAT)
+            if (add(string_to_parse) == END_WRONG_FORMAT)
             {
                 /* строка имеет неправильный формат */
                 fprintf(stderr, "Строка %d: Неправильный формат \n", str_num);
@@ -128,12 +128,12 @@ void KursBDClass::close()
 }
 
 /**
- * @fn int parse(char *string_to_parse)
+ * @fn int add(std::string string_to_parse)
  * @brief Функция обработки строки
  * @param string_to_parse - строка
  * @return Код удачного завершения / ошибки
  */
-int KursBDClass::parse(std::string string_to_parse)
+int KursBDClass::add(std::string string_to_parse)
 {
     unsigned int i = 0;     // счетчик
     unsigned int el_num;    // номер записи
@@ -359,17 +359,6 @@ void KursBDClass::order_clear(unsigned int length)
 }
 
 /**
- * @fn void add(std::string value)
- * @brief Функция вставляет новое значение БД
- * @param value - Запись для добавления в таблицу
- */
-void KursBDClass::add(std::string value)
-{
-    /* добаляем запись в таблицу */
-    parse(value);
-}
-
-/**
  * @fn int add_to_bd(FILE *bd, const char *string)
  * @brief Оболочка для записи данных в файл БД
  * @param bd - Дескриптор файла
@@ -515,7 +504,7 @@ void KursBDClass::insert(std::string value)
     unsigned int i, j; // счетчики
 
     /* добаляем запись в таблицу */
-    parse(value);
+    add(value);
 
     /* сортировка БД */
     sort_table(table_header[sort_field]);
