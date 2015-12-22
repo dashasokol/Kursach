@@ -64,13 +64,14 @@ public:
                 std::string value);                     // строковые значения
     void next_select(std::string field,                 // Функция продолжает искать записи в таблице
                      std::string value);                // по полю, содержащему значения
-    int add(std::string string_to_parse);              // Функция вставляет новое значение в БД
+    int add(std::string string_to_parse);               // Функция вставляет новое значение в БД
     void del(std::string field,                         // Удаление всех записей, из поля соответствуюх
              std::string value);                        // указанному значению
     int sort(std::string field);                        // Оболочка для функции сортировки по полю
     void insert(std::string value);                     // Вставка в отсортированную БД
     unsigned int get_length();                          // Функция возвращает размер БД
     std::string get_entry(unsigned int number);         // Функция возвращает указанную запись БД
+    std::string get_sort_field();                       // Функция возвращает поле сортировки
 };
 
 #endif // KURSBDCLASS_H

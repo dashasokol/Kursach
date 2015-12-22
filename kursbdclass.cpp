@@ -549,3 +549,13 @@ std::string KursBDClass::get_entry(unsigned int number)
     /* возвращаем запись в текстовом формате */
     return tmp;
 }
+
+/**
+ * @fn std::string get_sort_field()
+ * @brief Функция возвращает поле сортировки
+ * @return Поле сортировки
+ */
+std::string KursBDClass::get_sort_field()
+{
+    return table_header[sort_field];
+}
