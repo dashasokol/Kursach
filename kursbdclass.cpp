@@ -408,7 +408,7 @@ void KursBDClass::del(std::string field, std::string value)
 {
     unsigned int i, j;              // счетчик
     int h_num = -1;                 // номер поля
-    unsigned int new_length = 0;    // новый размер БД
+  //  unsigned int new_length = 0;    // новый размер БД
 
     /* ищем номер поля */
     for (i = 0; i < header_col; i++)
@@ -422,20 +422,23 @@ void KursBDClass::del(std::string field, std::string value)
     if (h_num >= 0)
     {
         for (i = 0; i < table_length; i++)
-            if (tb[(i-1)*header_col+h_num].value != value)
+            if (tb[i*header_col+h_num].value != value)
                 order[order_len++] = i;
     }
 
     /* обновляем параметр number для каждой записи */
     for (i = 0; i < order_len; i++)
     {
-        if (isOrder(i) == END_EXIT)
-        {
-            for (j = 0; j < header_col; j++)
-                tb[i*header_col+j].number = new_length;
+        for (j = 0; j < header_col; j++)
+            tb[i*header_col+j] = tb[order[i]*header_col+j];
 
-            new_length++;
-        }
+//        if (isOrder(i) == END_EXIT)
+//        {
+//            for (j = 0; j < header_col; j++)
+//                tb[i*header_col+j].number = new_length;
+
+//            new_length++;
+//        }
     }
 
     /* изменяем размер БД */
