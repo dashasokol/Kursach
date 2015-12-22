@@ -79,7 +79,7 @@ int main()
             break;
         case 'e':
         case 'E':
-            b();
+            e();
             break;
         case '1':
             ex1();
@@ -249,7 +249,7 @@ void c()
     
     cout << "Сортировка по полю: " << field << "\n";
 
-    /* Удаляем запись */
+    /* Сортируем */
     mainBD.sort(field);
 
     /* записываем файл */
@@ -317,13 +317,19 @@ void e()
     /* Открываем БД */
     openBD(&mainBD, mpath);
 
-	string new_entry = "124;Galina;Zuyeva;46;Cleaner";
-	cout << "Добавление записи: " << new_entry << "\n";
+    /* Сортируем БД до вставки */
+    /* Критерий */
+    string field = "FIRSTNAME";
+    cout << "Сортировка по полю: " << field << "\n";
+    mainBD.sort(field);
+
+    string new_entry = "124;Galina;Zuyeva;46;Cleaner";
+    cout << "Добавление записи: " << new_entry << "\n";
 
     /* Заносим данные в конец файла */
     mainBD.insert(new_entry);
 
-    /* записываем файл */
+    /* Записываем файл */
     mainBD.write_buffer();
 
     cout << "\nРезультат в файле: " << mpath << "\n\n\n";

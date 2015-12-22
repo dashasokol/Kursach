@@ -512,13 +512,18 @@ void KursBDClass::insert(std::string value)
     /* добаляем запись в таблицу */
     add(value);
 
-    /* сортировка БД */
-    sort_table(table_header[sort_field]);
+    if (sort_field > 0)
+    {
+        /* сортировка БД */
+        sort_table(table_header[sort_field]);
 
-    /* обновляем параметр number */
-    for(i = 0; i < table_length; i++)
-        for(j = 0; j < header_col; j++)
-            tb[i*header_col+j].number = order[i];
+        /* обновляем параметр number */
+        for(i = 0; i < table_length; i++)
+            for(j = 0; j < header_col; j++)
+                tb[i*header_col+j].number = order[i];
+
+        order_len = table_length;
+    }
 }
 
 /**

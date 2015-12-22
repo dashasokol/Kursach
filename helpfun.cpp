@@ -40,6 +40,7 @@ int fmwrite(FILE * file, const void * Data, int size)
  */
 int fmclean(FILE * file)
 {
+    fseek(file, 0, SEEK_SET);
     /* обрезаем конец файла и посылаем информацию от функции записи на выход */
     return ftruncate(fileno(file), ftell(file));
 }
