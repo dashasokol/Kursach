@@ -83,9 +83,12 @@ int main()
             break;
         case '1':
             ex1();
+            break;
         case '2':
             ex2();
             break;
+        case '\n':
+           	break;
         default:
             cout << "  !Нет такого пункта\n";
             system("pause");
@@ -169,9 +172,12 @@ void a()
 
     /* Открываем БД */
     openBD(&mainBD, mpath);
+	
+	string new_entry = "124;Galina;Zuyeva;46;Cleaner";
+	cout << "Добавление записи: " << new_entry << "\n";
 
     /* Заносим данные в конец файла */
-    mainBD.add("124;Galina;Zuyeva;46;Cleaner");
+    mainBD.add(new_entry);
 
     /* записываем файл */
     mainBD.write_buffer();
@@ -180,6 +186,9 @@ void a()
 
     /* Закрываем БД */
     mainBD.close();
+    
+    /* Останавливаем программу */
+    system("pause");
 }
 
 void b()
@@ -200,16 +209,21 @@ void b()
     /* Открываем БД */
     openBD(&mainBD, mpath);
 
+	cout << "Удаление всех записей где: " << field << " = " << value << "\n";
+
     /* Удаляем запись */
     mainBD.del(field, value);
 
     /* записываем файл */
     mainBD.write_buffer();
 
-    cout << "Результат в файле: " << mpath << "\n\n\n";
+    cout << "\nРезультат в файле: " << mpath << "\n\n\n";
 
     /* Закрываем БД */
     mainBD.close();
+    
+    /* Останавливаем программу */
+    system("pause");
 }
 
 void c()
@@ -232,6 +246,8 @@ void c()
 
     /* Открываем БД */
     openBD(&mainBD, mpath);
+    
+    cout << "Сортировка по полю: " << field << "\n";
 
     /* Удаляем запись */
     mainBD.sort(field);
@@ -239,10 +255,13 @@ void c()
     /* записываем файл */
     mainBD.write_buffer(selpath);
 
-    cout << "Результат в файле: " << selpath << "\n\n\n";
+    cout << "\nРезультат в файле: " << selpath << "\n\n\n";
 
     /* Закрываем БД */
     mainBD.close();
+    
+    /* Останавливаем программу */
+    system("pause");
 }
 
 void d()
@@ -261,11 +280,13 @@ void d()
     selpath += SELECTBDNAME;
 
     /* Критерий */
-    string field = "YEARS";
-    string value = "30";
+    string field = "FIRSTNAME";
+    string value = "Maria";
 
     /* Открываем БД */
     openBD(&mainBD, mpath);
+    
+    cout << "Выборка всех записей где: " << field << " = " << value << "\n";
 
     /* Удаляем запись */
     mainBD.select(field, value);
@@ -273,10 +294,13 @@ void d()
     /* записываем файл */
     mainBD.write_buffer(selpath);
 
-    cout << "Результат в файле: " << selpath << "\n\n\n";
+    cout << "\nРезультат в файле: " << selpath << "\n\n\n";
 
     /* Закрываем БД */
     mainBD.close();
+    
+    /* Останавливаем программу */
+    system("pause");
 }
 
 void e()
@@ -293,16 +317,22 @@ void e()
     /* Открываем БД */
     openBD(&mainBD, mpath);
 
+	string new_entry = "124;Galina;Zuyeva;46;Cleaner";
+	cout << "Добавление записи: " << new_entry << "\n";
+
     /* Заносим данные в конец файла */
-    mainBD.insert("124;Galina;Zuyeva;46;Cleaner");
+    mainBD.insert(new_entry);
 
     /* записываем файл */
     mainBD.write_buffer();
 
-    cout << "Результат в файле: " << mpath << "\n\n\n";
+    cout << "\nРезультат в файле: " << mpath << "\n\n\n";
 
     /* Закрываем БД */
     mainBD.close();
+    
+    /* Останавливаем программу */
+    system("pause");
 }
 
 void ex1()
@@ -343,13 +373,13 @@ void ex1()
         mainBD.add(scnDB.get_entry(i));
 
     sort_field = mainBD.get_sort_field();
-    cout << "Сортировка по полю" << sort_field << "\n";
+    cout << "Сортировка по полю: " << sort_field << "\n";
     mainBD.sort(mainBD.get_sort_field());
 
     /* Записываем данные в файл */
     mainBD.write_buffer(sopath);
 
-    cout << "Результат в файле: " << sopath << "\n\n\n";
+    cout << "\nРезультат в файле: " << sopath << "\n\n\n";
     scnDB.close();
     mainBD.close();
 
@@ -396,6 +426,8 @@ void ex2()
     mainBD.next_select(field2, value2);
     cout << "Сортировка по полю: " << field3 << "; со занчением: " << value3 << "\n";
     mainBD.next_select(field3, value3);
+    
+    cout << "\nРезультат в файле: " << selpath << "\n\n\n";
 
     /* Записываем данные в файл */
     mainBD.write_buffer(selpath);

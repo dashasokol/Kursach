@@ -152,6 +152,9 @@ int KursBDClass::add(std::string string_to_parse)
 
     /* увеличиваем количество добавленных записей */
     table_length++;
+    
+    /* обнуляем массив order */
+    order_clear(table_length);
 
     return END_OK;
 }
@@ -223,6 +226,9 @@ void KursBDClass::stringInsert(unsigned int number)
  */
 int KursBDClass::write_buffer(std::string s_file_name)
 {
+	/* записать найденные записи в строку вывода */
+    get_order_string();
+	
     /* открываем файл */
     FILE *file = fmopen(s_file_name.c_str(), "r+", "");
 
@@ -240,6 +246,9 @@ int KursBDClass::write_buffer(std::string s_file_name)
  */
 int KursBDClass::write_buffer()
 {
+	/* записать найденные записи в строку вывода */
+    get_order_string();
+	
     /* стираем старые данные */
     clean_db(bd_out_file);
 
@@ -311,9 +320,6 @@ void KursBDClass::next_select(std::string field, std::string value)
                 /* добавляем найденный номер записи в order */
                 order[order_len++] = ord[i];
     }
-
-    /* записать все найденные записи в строку вывода */
-    get_order_string();
 }
 
 /**
@@ -406,7 +412,7 @@ void KursBDClass::del(std::string field, std::string value)
 
     /* ищем номер поля */
     for (i = 0; i < header_col; i++)
-        if (field == value)
+        if (field == table_header[i])
             h_num = i;
 
     /* обнуляем массив по которому определяется порядок вывода */
@@ -449,9 +455,6 @@ int KursBDClass::sort(std::string field)
 
     /* сортируем данные */
     int ret = sort_table(field);
-
-    /* записать все записи в строку вывода */
-    get_order_string();
 
     return ret;
 }
