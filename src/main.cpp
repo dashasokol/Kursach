@@ -2,12 +2,12 @@
 #include <cstring>          // strstr, str[n]cat, strlen
 #include <stdlib.h>         // system
 #include <clocale>
-#include "kursbdclass.h"    // заголовочный файл модуля класса
+#include "../include/kursbdclass.h"    // заголовочный файл модуля класса
 
 /* используем стандартное пространство имен */
 using namespace std;
 
-#define DBPATH "C:\\1\\"            // путь до рабочей папки
+#define DBPATH "G:\\kyrsovaya\\base\\"            // путь до рабочей папки
 #define MAINDBNAME "KurBD"          // основная база
 #define SECONDDBNAME "ScnBD"        // вторая база
 #define SELECTBDNAME "SelectBD"     // файл для вывода команды select
@@ -149,6 +149,10 @@ int sort(KursBDClass *BDclass, string field)
     return 0;
 }
 
+/**
+ * @fn void print_menu()
+ * @brief Вывод меню
+ */
 void print_menu()
 {
     /* Отчищаем экран */
@@ -159,7 +163,12 @@ void print_menu()
             "Другие комманды:\nq) Выход\n\n\nВаш выбор: ";
 }
 
-void a()
+
+/**
+ * @fn void a()
+ * @brief Тестирование пункта а
+ */
+ void a()
 {
     /* Отчищаем экран */
     system("cls");
@@ -169,11 +178,12 @@ void a()
     /* Неупорядоченные базы данных */
     string mpath = DBPATH;
     mpath += MAINDBNAME;
+    mpath += "a";
 
     /* Открываем БД */
     openBD(&mainBD, mpath);
 	
-	string new_entry = "124;Galina;Zuyeva;46;Cleaner";
+	string new_entry = "124;Полина;Грачева;46;СЕО";
 	cout << "Добавление записи: " << new_entry << "\n";
 
     /* Заносим данные в конец файла */
@@ -191,6 +201,10 @@ void a()
     system("pause");
 }
 
+/**
+ * @fn void b()
+ * @brief Тестирование пункта b
+ */
 void b()
 {
     /* Отчищаем экран */
@@ -201,6 +215,7 @@ void b()
     /* Неупорядоченные базы данных */
     string mpath = DBPATH;
     mpath += MAINDBNAME;
+    mpath += "b";
 
     /* Критерий */
     string field = "YEARS";
@@ -226,6 +241,10 @@ void b()
     system("pause");
 }
 
+/**
+ * @fn void c()
+ * @brief Тестирование пункта c
+ */
 void c()
 {
     /* Отчищаем экран */
@@ -264,6 +283,10 @@ void c()
     system("pause");
 }
 
+/**
+ * @fn void d()
+ * @brief Тестирование пункта d
+ */
 void d()
 {
     /* Отчищаем экран */
@@ -281,7 +304,7 @@ void d()
 
     /* Критерий */
     string field = "FIRSTNAME";
-    string value = "Maria";
+    string value = "Мария";
 
     /* Открываем БД */
     openBD(&mainBD, mpath);
@@ -303,6 +326,10 @@ void d()
     system("pause");
 }
 
+/**
+ * @fn void e()
+ * @brief Тестирование пункта e
+ */
 void e()
 {
     /* Отчищаем экран */
@@ -313,6 +340,7 @@ void e()
     /* Неупорядоченные базы данных */
     string mpath = DBPATH;
     mpath += MAINDBNAME;
+    mpath += "e";
 
     /* Открываем БД */
     openBD(&mainBD, mpath);
@@ -323,7 +351,7 @@ void e()
     cout << "Сортировка по полю: " << field << "\n";
     mainBD.sort(field);
 
-    string new_entry = "124;Galina;Zuyeva;46;Cleaner";
+    string new_entry = "124;Галина;Зуева;46;Убощица";
     cout << "Добавление записи: " << new_entry << "\n";
 
     /* Заносим данные в конец файла */
@@ -341,6 +369,10 @@ void e()
     system("pause");
 }
 
+/**
+ * @fn void ex1()
+ * @brief Тестирование задачи 1
+ */
 void ex1()
 {
     unsigned int i; // счетчик
@@ -393,6 +425,10 @@ void ex1()
     system("pause");
 }
 
+/**
+ * @fn void ex2()
+ * @brief Тестирование задачи 2
+ */
 void ex2()
 {
 
@@ -418,10 +454,10 @@ void ex2()
     string value1 = "30";
 
     string field2 = "FIRSTNAME";
-    string value2 = "Maria";
+    string value2 = "Мария";
 
     string field3 = "POSITION";
-    string value3 = "Admin";
+    string value3 = "Администратор";
 
     /* Выполняем первую выборку */
     cout << "Сортировка по полю: " << field1 << "; со занчением: " << value1 << "\n";

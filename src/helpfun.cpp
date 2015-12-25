@@ -7,7 +7,7 @@
 #include <cstring>      // strstr, str[n]cat, strlen
 #include <cstdlib>      // malloc, free, rand
 #include <unistd.h>     // ftruncate
-#include "helpfun.h"
+#include "../include/helpfun.h"
 
 /**
  * @fn int fmwrite(FILE * file, void * Data, int size)

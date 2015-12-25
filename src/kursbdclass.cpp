@@ -2,8 +2,8 @@
 #include <cstdlib>          // malloc, free, rand
 #include <cstring>          // strstr, str[n]cat, strlen
 #include <string>           // std::string
-#include "helpfun.h"        // Заголовочный файл helpfun
-#include "kursbdclass.h"    // Заголовочный файл этого модуля
+#include "../include/helpfun.h"        // Заголовочный файл helpfun
+#include "../include/kursbdclass.h"    // Заголовочный файл этого модуля
 
 /**
  * fn KursBDClass()
@@ -376,28 +376,6 @@ int KursBDClass::add_to_bd(FILE *bd, const char *string)
     /* записываем весь массив символов в файл с позиции 0 */
     return fmwrite(bd, string, strlen(string));
 }
-
-/**
- * @fn int isOrder(unsigned int number)
- * @brief Функция проверяет вхождение числа в массив order
- * @param number - Число
- * @return END_OK - элемент найден / END_EXIT - элемент не найден
- */
-int KursBDClass::isOrder(unsigned int number)
-{
-    unsigned int i; // счетчик
-
-    /* проверяем каждый элемент order */
-    for (i = 0; i < order_len; i++)
-        if (number == order[i])
-            /* элемент найден */
-            return END_OK;
-
-    /* элемент не найден */
-    return END_EXIT;
-}
-
-
 /**
  * @fn void del(std::string field, std::string value)
  * @brief Удаление всех записей, из поля соответствуюх указанному значению
@@ -432,13 +410,7 @@ void KursBDClass::del(std::string field, std::string value)
         for (j = 0; j < header_col; j++)
             tb[i*header_col+j] = tb[order[i]*header_col+j];
 
-//        if (isOrder(i) == END_EXIT)
-//        {
-//            for (j = 0; j < header_col; j++)
-//                tb[i*header_col+j].number = new_length;
 
-//            new_length++;
-//        }
     }
 
     /* изменяем размер БД */

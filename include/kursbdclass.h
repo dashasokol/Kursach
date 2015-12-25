@@ -50,7 +50,6 @@ class KursBDClass
     void get_order_string();                            // Функция записи данных в строку вывода
     void order_clear(unsigned int length);              // Отчистка массива, по кторому определяется порядок
     int add_to_bd(FILE *bd, const char *string);        // Оболочка для записи данных в файл БД
-    int isOrder(unsigned int number);                   // Функция проверяет вхождение числа в массив order
     int sort_table(std::string field);                  // Функция сортировки одного массива относительно
                                                         // значений другого
 public:
